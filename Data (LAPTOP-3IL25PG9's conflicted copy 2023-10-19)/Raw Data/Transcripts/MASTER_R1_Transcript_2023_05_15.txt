@@ -1,0 +1,407 @@
+Open Science Focus Group Transcript-R1 #1
+05/15/2023
+
+F: Okay. let's go ahead and begin our first question. Open Science refers to a collection of research practices that aim to increase the accessibility, transparency, and replicability of science. What experiences have you had using open science practices? If any. And again you can just unmute and go ahead and jump in.
+
+19: Hi all I'm. X, Can you hear me? Okay.
+
+F: Yes.
+
+19: Okay, great. I...I have such limited experience with open science[1], and I think one of the most relevant contributions to that question that I could make is that I had a PI once pay for open access to...for for our manuscript to be openly accessible post publication.[2] So I know that that's possible. I know it's quite expensive, and I know that without funding from the institution under which the research was conducted and the PI's willingness to devote funding to that, we likely wouldn't have been able to take advantage of that option[3].
+
+F: Thank you, X. Other experiences with open science practices?
+
+20: Hi! Oh, go ahead!
+
+21: Oh, thank you. So I'm X. I am at X University, so I have encouraged my students to do pre-registration for the manuscripts they are working on, and so I also have taught how to do pre-registration in a course[4]. And for Ph. D. students. And I have also done some code-based...code code base using Github and train my students how to use Github, how to collaborate, and how to how to increase the transparency of their research. So in our published papers we have a shared all of our codes for experimental paradigms, and all the and also all the analysis scripts are available on both open science framework and also Github.[5] And I have also paid the open access fee[6]. A lot. And so, I'm also looking for recommendations about how to make this sustainable for our research group.
+
+F: Thank you. And X, was that you that wanted to chime in? Go ahead.
+
+20: Yeah, sure. I'm X. Nice to meet you all. I'm at X. And I guess I use very similar practices. So, I'd say most of my open science practices would be related to code sharing[7] and data sharing so either on...I guess all of the data sharing I've done so far has been on osf.io. That website. I know that there are other websites that can be used, and I'm kind of not sure what...There are many options, and so I think I just kind of chose this one because it was free and easy to use.[8] But I know that from my own field there's also open neuro, I think, has data sharing, and I haven't used that ye[9]t[10]. But things like that. And then yes, we also have a lab Github, where, even as we're doing our analyses, I have all of my students use Github to have version controlled code. Usually we don't work completely openly at the beginning. So we will have private repositories for code while we're working on them. And then, when we are ready to submit our paper, we will make the publication ready one that can be reviewed. So, I know that some people do fully open as they're going, but we tend to, you know, have our sort of in-house version of the code and then our camera-ready version when we're happy with it. We put that as the public one that's released with the paper, or released during the review.[11] The only problem I've had with that is recently I submitted to a conference where they required double blind review. And then it's kind of not possible to ha...I don't know how to do the double-blind code because there was no way to upload it, so we just didn't include it. But I felt like that was kind of a missed opportunity. So, if people know and have dealt with that, I'd love to hear that.[12]
+
+F: Thank you so much for sharing that. Oh, go ahead.
+
+21: I'm just responding to X’s last comment. We were also asked to share our codes and our our experimental paradigms that have to be reviewed double in a double-blind fashion, and there are ways on OSF. You can create a double blind link without seeing the uploaders’ ID. Github, it's impossible.[13]
+
+F: Thank you for sharing that. Are there any other experiences the group would like to share using open science practices?
+
+22: So hi everybody! My name is X. Just finished my first semester at X University. And I guess my experiences have been varied. So, I have a preprint of my Thesis Masters. So that's that's something that I did early on without really even knowing what open science was.[14] And then during my doctorate, so I first published on data that was collected before I was there, and we did have someone reach out for the data. But it just never happened[15], and I know that we tried to publish like, trying to put something and register some...a couple of manuscripts, but it didn't happen because it was taking away time from the actual manuscript[16]. I think part of the thing that we ran into is that all of us were learning how to do open science, including my PI. And there was a lot of hesitancy there of like, what do we need to do? What, what's good to put in? And then also just making sure that you're selecting the right area. So, like I do a lot in language and literacy and speech, and so like I know OSF is a good one, but I think there's a couple of new ones that have started that are specific more for that area.[17] And then, like my dissertation data, I have it in my IRB that I can do it. But you know, life got in the way, and it just didn't happen, because it is something new, and it takes more effort. And I had to finish over that[18]. So I kinda had to make choices along the way, but definitely would love to do that. And then, actually, in my Phd program, I learned how to use GitHub. But my PI didn't use R or anything like that. And so then it became more of like a niche for me, and no one used it, and so I haven't used it for a while. But I need to get back to it as I am starting to do a lot on my own.[19] So, I've had like sprinklings of it, but not a whole lot of like follow through, and success with it[20] so definitely an area I want to establish myself in, because I want this to happen. But I think I'm just like at the point where I'm I'm unsure, and we love support and resources to like guide me. Kind of like you're on the right track. Keep going! So that's where I'm at with it.[21]
+
+F: It looks like we lost Danika. I’ll text her. But I’m still taking notes and we’re still recording.
+
+23: Oh, hi. Okay. Okay, yeah. So so I'm X at X University. So I also have like very limited experience with using like like open science[22]. To me, there's like 2 parts: the first is publish in open access journals. [23]So that's something, I think, as a very junior PI that's kind of a financial burdens a lot. So because, like where my PI has a lot of money. So I don't need to worry about that. But like for myself, that's something I think will be something I need to consider seriously when I’m thinking about which journal to submit to[24]. So for the other part, I think it's just sharing the data[25], sharing the XX. I only recently try to kind of sharing my data for one of my recent papers...sharing the data and sharing also the experiment paradigm[26].[27] There's a some...I think feels... the different platform, since had different requirements or different, like storage limit, like, for example, if we do each data. They're just huge. But for some of the platforms, they don't give you that amount of storage limit. Which is kind of a limit for some of them. So that's something I can...as I'm learning the process. I feel like I'm still trying to figure out which would be a good platform kind of, for sharing the data[28].
+
+20: I guess...I had one more to share that. I forgot. Oh, sorry, X, you were going to go. Why, don't you go instead?
+
+24: Oh, okay, all right. I was gonna say that I had attended one of the CSDisseminate workshops a couple of years ago that talked about how to figure out which version of your papers you're legally allowed to share, and I thought that was really helpful[29]. And spent some time kind of going through my publications and figuring that out. And then never quite got to the point of getting everything posted on my website. But...on my lab website. But it's something that's on my To Do List[30].[31] It's just been something that's been pushed to the bottom of the To Do List for kind of a long time, because it's really time consuming to go through all of those old papers and figure out, where is that final version of the accepted manuscript? And like figuring out the different things for different journals.[32] So it's really just been sort of a time limitation that's kind of prevented me from following through on doing that at this point, even though I'd like to.[33] Many of my papers are also one PubMed Central, because they were affiliated with an NIH-funded study. So I feel like I personally have a better understanding of of that of the publication open science possibilities.[34] And I I haven't a lot of the data sharing kinds of things that others have talked about, and so that that feels to me more overwhelming at the moment [35]in terms of knowing what to do and looking at the new NIH Grant requirements. There's a new like data sharing plan form that's much more in depth in talking about like repositories and things like that[36]. And I I don't even know where sort of to begin with that at this point.[37] I have to do some work in the next couple of months before my next submission to figure out exactly what is meant...I'm meant to do with that. So...motivated to learn.[38] But I I do feel like there's a big learning curve and time commitment associated with figuring it all out.[39]
+
+F: Thank you for sharing great. So that kind of leads us into our next question, which I'm. Going to move us to for time's sake. What training experiences have you had, if any, about open science practices?
+
+22: I guess my only formal one was in my stats courses that we used Github, but otherwise I haven't had any formal education about that.[40] So.
+
+20: This is kind of incidental, I guess I I would say similarly. I don't remember, if I had formal training on it. But I have been involved in a summer workshop called Neuro Academy, which is at the University of Washington. And they, it's very much about open science practices and the open Science community, and particularly code replicability and science replicability. And so I have been an instructor there. And so I've watched other people give talks, and that's actually helped me learn as well, even though I was not formally a student. But that's a great group[41].
+
+F: Thank you. Any other trainings that anyone has received?
+
+21: Similar to X. I don't have any formal training. I I mainly follow the openly accessible training materials by the Society for Neuroscience, and also there are open, open science framework. They have a lot of materials, such we can comb through about how to how to do open science.[42] There are a lot of Youtube videos as well, and have a bookmark folder for those resources, and happy to share[43].
+
+19: Similar to others. This is X and I did not receive any formal training in my doctoral program, my postdoc, or even on boarding as a new faculty member at my home institution.[44] And so I've been finding that in order to learn more, it requires a lot of self study, and then, of course, finding the time and the bandwidth to move that item up on the priority list is always so challenging, although I really value it so it's it's been a bit of a struggle personally.[45]
+
+F: Okay, I'm going to move us on to the next question. What open science topics would you like to learn more about? So here are a few different topics of ideas. Maybe some of them will spark something, you remember hearing that word, and you want to learn more about it. So some of the different open science practices are pre-registration, self, archiving, gold open access, open data. Many of you have talked about some of these so far, open peer, review, and open educational resources. So which ones kind of stand out to you as ones that you would like to learn the most about?
+
+21: For me, I'm still very interested in knowing what's the best way to share data. There are multiple platforms online, including open neuro and a few other...I’m blanking on the name  I can look it up and you put it on the chat. That's how accessible it is to the users in terms of uploading and downloading data. And so what what would be the most straightforward way to do it. I'm constant today at a loss.[46] We have multi-modal data, including for example, video, audiom speech sample, that can be identifiable. They're They're just lot of issues that we need to deal with before uploading and the deidentifying to the best we can for data sharing.[47] So I I think it requires more professional support than just self-training.[48]
+
+22: And going along with that, at what point you know, are you able to share your data like how much cleaning needs to happen. Besides deidentification. So like for example, I use Redcap. And so a lot of it comes down, and it's like this, and then a subhead, depending on what type of question you're asking. And I can just give a key with that? Or do I have to convert that because I do that when I'm running my scripts in R[49]. But, so just understanding more about how much do you have to prepare your data. What's expected in that?[50] And then also, I would love to to learn more about pre-registration[51], and then kind of thinking about also, if like I do...If I write them in... like I'm writing up my dissertation. Do like a preprint, or are there other options that are more efficient and effective because I do need to move it along. So just thinking more about those aspects.[52]
+
+F: Thank you. So we've heard open data, pre-registration, more about pre-prints. Are there any other topics that others would like to learn more about?
+
+25: I'd be curious to know more about open peer review. I don't know that I i'm familiar with that term, and it just sort of struck me as interesting. So that's my two cents.[53]
+
+F: Thank you. Any others?
+
+20: Yeah, I'd like to know...I guess all of these sound interesting, but the a lot of people have mentioned the financial burden of open access, so the gold open access.[54] I know that I could preprint a study[55], but it's also nice to have. I don't know, like are there ways to get gold open access paid for if you don't have grant support for a particular project? That's what I would like to know.[56]
+
+F: Thank you. Okay. We're gonna move on to the next question just for time seat. How would you prefer to learn about open science practices? Would you prefer to have a Webinar that you could access live, or a pre recorded Webinar, an interactive workshop, maybe, where someone could talk you through different steps. A handout that we could just send out to you to read over a Youtube video, or maybe something else. What do you think would work best for you for learning about open science practices?
+
+22: For me? It would be really helpful to kind of do something where we can see information online.[57] But then have a space to come to where we're working through something and we're stuck. So maybe it's, you know. Maybe you have a project that you're working on from the ground up.[58] Or maybe it's something that you're trying to, you know, depending on the different focus. But I think, having the ability to do like pre-recorded stuff, or maybe interactive.[59] But you can go back and look at it, and then have spaces to work on something and kind of like hold me accountable to coming back to it, and then also have questions and get those answers that are more specific to my type of data.[60] Everybody has different data. And so there there can be different types of challenges.[61] So...
+
+F: Are you thinking that would be like a one-time event, or something that would be ongoing?
+
+22: Maybe ongoing? So maybe it could be like 3-months...you could do like offerings of like 3 months, and you can apply to be in a cohort or something that can help. I find going longer than 3 months doesn't really happen, because you just get burnt out. But that would just, you know it could possibly be something over the summer or yeah, just different points, but that that could be something helpful to me.[62]
+
+F: Thank you. Other thoughts on types of training formats?
+
+23: Yeah, I think a combination of all those sounds great, because sometimes you like we are so busy like teaching all those kinds of things. Probably we don't have time to attend like a long like workshop thing, but it's always there some resource there we can revert to.[63] Prerecorded, YouTube video, that would be helpful.[64] Handout[65]. Sometimes, if maybe we have our students. They can attend some workshops and to have some interaction more like direct interaction. [66]That may be helpful. So I think a combination of all those things would be great. 
+
+F: Thank you. And just so I understand you're saying it would also be nice if students could access these trainings as well.
+
+23: Yeah of course.
+
+F: Great. Thank you. Other thoughts?
+
+19: I I agree with that. Like being able to. Oh, I'm sorry. Okay, Sorry. I'll be brief. Being able to outsource this to research assistants with the ideal, I think, from a a managing, you know, resources standpoint. Also, I wish there was like a like a hotline like like 1-800-help me with open science stuff.[67] So as the need like...I would love to say I would attend a webinar. But the honest truth is, I likely don't have the time to figure out how to make that work.[68] But when the need pops up, and it's like really urgent, and in the moment, if I could go to like an FAQ site, or like, just have that resource at my fingertips[69] like a open science coach that you could call or pop into, even, you know, asynchronously. That would be really, I think super helpful.[70]
+
+F: Thank you.
+
+21: I I pasted a a website an example. I think this is really consistent to the X's suggestion it. This is a fellowship opportunity for trainees and junior faculty members certainly welcome to apply. I sent two post docs from my lab to attend the training, and the requirement is that they have to come back, and develop a course in their own community and teach other people. So I think this is a really really good format to to help expand the training opportunities and the the training fellowship. The the organization of this fellowship also provide a lot of infrastructure for teaching. So I think everyone who was involved was very happy including the later trainees in our Institute, who attended my postdocs’ course later on.
+
+F: That sounds fantastic. Thank you so much for sharing that. 
+
+20: Okay, I'm: just sorry. Can I add one more thing that I just thought of from X's comment?..What I would love actually is. So you know their FAQ sections. What if there was like a open science triage quiz, or something where you're online and it's like, what type of data do  you have behavioral data, video data, HIPAA sensitive data ,like you have some flowchart where then it directs you to the appropriate resources based on what you're trying to do like that would be super nice. I don't know if that exists. But I would want that.[71]
+
+F: Thank you. That's a great idea. Okay, now we're going to talk more about 4 different open science practices in more detail. The first is pre registration which some of you have already mentioned. This is the process of posting an outline for a proposed research project on a pre registration repository, such as the open science framework which some of you mentioned, OSF, before your data collection or analysis. Preregistrations typically include research questions, hypotheses, methods and an analysis plan. What do you perceive to be barriers in pre-registering your own studies?
+
+24: I guess. To me, I mean this isn't a direct answer to this question, but I'm not really sure what the benefits are of preregistering my study. So I think I I need to have a better understanding of why it's beneficial to do that before putting the time into figuring out how to do that.[72]
+
+F: Thank you.
+
+25: I I think, like with so much of getting your research program up and running as a junior investigator is just time. Time and and manpower.[73] You know a lot of us have students, but it takes a while to get them trained. And this seems like something that would require some training from the PI if a student was going to assist with it.[74] But yeah, I I I would. I would agree with X that if you don't necessarily see the benefit, then why why, invest the time in doing this. [75]That that's what I would see would be the barriers, the manpower and the time investment.[76][77]
+
+F: Thank you. Any other barriers?
+
+26: I don't see any barriers.
+
+F: Thank you. There's no barriers that you're encountering in your own practice.
+
+26: No, well the thing is, the thing is, what is the benefit? The benefit is that you get stuff published no matter what the outcomes are. I think that’s XXXX. [78]
+
+F: Thank you.
+
+26: I mean hopefully, right? So yeah. So I am, I'm very much in favor of preregistration. I haven’t done it myself yet.[79] But I intend to.[80]
+
+F: Great, any other thoughts about barriers for pre-registrations?
+
+21: I I can mention a benefit which is training students to think about design of the experiment in advance and to literature review to support their hypotheses. So I I use that as an opportunity to train my students how to write.[81]
+
+F: Thank you. We're going to stay on the same topic of preregistration. What factors currently facilitate your ability to be able to pre-register your studies for those that are using preregistrations, or what is something that you think might be able to facilitate your ability to preregister your own studies in the future?
+
+21: I think it's the existing template that is very handy for people who are new to preregistration and look for the kind of information necessary for a preregistered report. [82]And also the encouragement for registered reports in a by by different journals. So who can publish a register report without results? But it has to be a timely publication. It cannot be too long.[83]
+
+F: Thank you. Any other facilitators that help you to be able to preregister maybe any resources or things that might be in place to help you to be able to preregister?
+
+Okay, let's switch topics here. Now, we're gonna go on to the next open science practice that we'll discuss today, which is self-archiving. Self- Archiving involves making a version of a manuscript legally and freely available on a lab website, personal website, or in a repository. What do you perceive to be the barriers to self archiving your own work?
+
+24: Well, I kind of mentioned this earlier, but I, to me the biggest barrier is time especially going backwards. Both the time to figure out which version, if for each article or each journal is legally allowed to be shared, and then finding that version and posting it somewhere, and that is not a small time investment in that. So that's been, to me, the biggest barrier.[84]
+
+F: Thank you. Time. Other thoughts?
+
+19: I would say IT support to get everything up on our University affiliated website. So making sure like, because I can't post directly to my my like University website. It has to go through our IT team. So that's sometimes super efficient. And other times really not.[85]
+
+F: Thank you. Other thoughts?
+
+22: For me. Sorry! I'll be quick. For me, understanding what are the things that I need to legally look out for, and just kind of making sure that it's all good before I do it. So that's kind of where I’m at.[86]
+
+26: For me. I'm sorry I do...We usually just use stored copies on on Research Gate and these websites. So you can post a link to that.[87] For legal, for for for legal reasons, I never really worried about that, because I I I don't think it's a realistic threat. I don't think publishers are going to go after individual researchers for sharing, their their work on the Internet. So I think it’s, I don’t see XXXX the university. Might not agree with me. But I’ve always shared everything wherever, whenever people request it. No matter what.[88]
+
+F: Are there any barriers that you faced, or are you saying you haven't faced any yet?
+
+26: Well, the only barrier is what what what the University's policy is.[89] But if somebody sends you a PM on the Research Gate or whatever, you can share whatever you want.[90]
+
+F: Thank you. What factors currently facilitate your ability to self-archive your work or could facilitate your ability to self-archive your work in the future?
+
+20: So for us, X, I'm sorry to hear that you can't access your own website. So now I'm really happy that I can. So my university does allow us to change our own, you know X affiliated website, and my research assistant can do it. So that's great. I think all universities should do that.[91]
+
+24: The the CSDisseminate workshop which I I went to, I think it was about 2 years ago, was extremely helpful in this,[92] because it directed, and I can't remember the names of the websites off the top of my head, but I do have them written down. So there's like websites where you can go to and search the journal and figure out for that journal which version of your manuscript you're legally allowed to share, and the rules kind of associated with that. But it's also, it's like in a couple of different places you have to go look. Not everything is all in the same spot. So it's not always just like a super streamlined process, but just knowing those resources, and where to look for that information was really really helpful.[93]
+
+F: Any other thoughts on this question?
+
+20: Maybe if the journal just once it was accepted, if they just, you know, send you an additional email with the PDF saying, here is the one that you can, self-archive. That seems like it would save time, for a lot of people[94]
+
+F: That would be excellent. Yes.
+
+20: I don't know if they want to do that though.
+
+F: Any other thoughts about this question, any other facilitators?
+
+22: I think maybe finding people at my university, too, that like finding the people that want to do open science or are doing it successfully, may be helpful, because every university is so different, just even website accessibility. Thankfully, I can do it. But I think just having people with you at your university could be helpful. So like finding that cohort. It's not always explicit or clear who does this so. Or who is working towards it. So.[95]
+
+F: Thank you. Okay, we're gonna move on to the third open science practice that we'll discuss today, which is gold open access. This is the process of paying a fee to publishers to make an article available for others to read for free. What do you perceive to be the barriers of publishing using gold open access?
+
+19: Certainly the cost. I think that's the obvious answer, but especially the cost for junior investigators who might not have big you know, externally funded grants as we're building our program of research. And so some of the some of the smaller internal and external grants that are awarded early in your career just simply don't have the the budget to support that line item.[96]
+
+20: I agree, and they're also vastly different by journal. The amount of money that it is. I know somebody who recently had an article accepted to nature neuroscience, and their open access fee is $13,000. And so why would I pay that versus paying for a graduate student, or like part of a research assistant? It's crazy to me like I would love to support open access, but that is, I think, that's way too much..[97].They didn't pay it.[98][99]
+
+F: Any other thoughts on this question?
+
+26: No, same. It’s just you have to figure in the amount of money beforehand.[100] And I hope that some of the resources will, I mean, many universities are working to supporting open access fees because they are basically stating on the on the...what’s it called? Library costs.[101]
+
+F: Thank you. So it sounds like the cost, and and having a plan ahead of time of how you're going to pay for them. What factors currently facilitate your ability to publish using gold open access, or could facilitate your ability to publish using gold open access in the future?
+
+26: Same thing money.[102]
+
+25: I think definitely money.[103] But you know department chairs or deans really valuing, having this open access to your work, and so having that support that can kind of come from the top. So even if you don't have the grant funds to pay for it, maybe somebody in administration really sees the value for your career and for the institution. I know that I think I think I had...I think we paid for open access for one of my articles, and it came from our department's budget, because my chair was just very supportive and just wanted, really valued me being able to have this as part of my publishing record.[104][105][106]
+
+F: Thank you. Any other facilitators besides cost, having the money and having support from department chairs or deans?
+
+21: Our university recently, they included Wiley and Springer, I think these two publisher...They said if you we choose to publish journals in these two publishers, the open access fee can be covered. If I understand that email correctly, it was from just a couple of months ago. X, if you have missed that email, we can read that email together.[107]
+
+24: I definitely did not see that email. I’ll have to go back and look for it. But that's exciting to hear.
+
+21: Yes. University support.[108] Definitely.
+
+F: Thank you. That's great. Okay, the last open science practice we'll discuss today is open data. Open data is the process of publicly sharing research data or resources needed for data collection, such as methodology, protocols or software packages. Open data is typically made available online on online repositories. What do you proceed to be barriers to the open data process?
+
+26: Okay, i'll go ahead. I think one of the barriers is is the value of the data set. I always feel that there is more in it than this. Just this one publication. So I'm, for for those reasons I'm reluctant to sharing, because I always think like there's like two more publications in this data set. So why would I give that away?[109] So that’s a real thing. It just. Yeah. That’s it I guess.
+
+F: Thank you. Other barriers to the open data process?
+
+23: So for me, I guess it's one of the things is like how to format the data, and also format the protocol in a kind of accessible way to others. I know like different labs do different things. So how to format in a way that everyone can understand. I think that's..sounds like takes a little bit of effort. It's really like when we writing code. Sometimes we understand our code, but not necessarily others understand our code. So, there's something, maybe, to learn about how to make more accessible.[110]
+
+F: Thank you. Other barriers?
+
+26: I actually think that that this is starting to be a discussion, though I'm sorry. But I actually think this accessibility might be be useful as a barrier. So only people who are really dedicated will will work on it. It’s accessible to everyone. But it's not  that that just everyone can just pick it up and do something with it.[111]
+
+F: Thank you.
+
+26: I don’t know. What do you think?
+
+F: Yeah. The others have thoughts on that or any other barriers that you're thinking of?
+
+22: I think. Oh, sorry. I think mine kinda related to what they were saying earlier. I was talking about just like how to format it.[112] But then, also you know, I use R and then I can get like a print out of what all the codes mean and everything. But then it's also trying to make sure that everybody understands the... I guess the the experiment itself, and the purpose of it, because I feel like that's always dangerous when you're sharing data. They may say, oh, there's a limitation in this data but it's like, well, that wasn't a focus. The focus was here. So I think there's just making sure interpretation of the data is done properly. And so how can I do that?[113] But also make it less time and effortful, effortless? [114]I guess you could say. While doing all of that, so
+make sense in my brain, but it might not make sense in theirs. [115]So...
+
+26: That interpretation difference is like the whole use of data sharing, right? To open up that that discussion.
+
+21: Yeah. But I also agree with X. That's the the description of your whole experimental design takes time.[116] You you don't want people to misunderstand what the data was for. So there there need to be metadata.[117] That's you. You spend time to create and clarify. [118]So I I I think the amount ofalso related to formatting as well.[119] The the amount of work that you put into this need also to be supported by resources. It's time, and it.[120] It need to be carefully done, and it requires technical skills, [121]and also the the website I posted on chats, the data brewery video database. It... the paperwork it takes to get access. And to upload data was very lengthy, at least for me as a user just as a user I I didn't even upload my own data. I wanted to get access to a shareable data on the website. It took forever, just to get all the paperwork done so. [122]These are all barriers, and will prevent people from contributing to this society.[123]
+
+F: Thank you for all...
+
+20: I'm sorry I keep doing this. One quick one. Copyright of stimuli. So, I use stimuli that I'm really interested in natural speech perception. And so, we actually use some movie clip stimuli that are copyrighted. I think, under fair use it's fine to use them, but I can't share. I'm pretty sure that I can't share the stimuli online, but that would be super important for anybody who wants to use the raw data instead of just derived data that I've created.[124] So, I'm not. I'm honestly not sure what I should do about that.[125][126]
+
+F: Yeah, that's a great point. Thank you for sharing that. Okay, in light of all these barriers, what are some factors that are currently facilitating your ability to use the open data process, or you think could facilitate your ability to use the open data process in the future.
+
+22: Well, I'm starting new right now. So, I think that allows me to figure out okay, how much do I want to spend on this? And so it's not like I'm...haven't been doing it for a while in my lab, and so now I have the ability to make that choice[127] so...but then again, at the same point, you need to have supportive individuals, and there's an and and I think people in my department are very supportive of it. It's just no one's really done it. So I think there's that aspect just getting that support which I know has been said. But yeah, so for me, that's where I'm at, and probably getting some support and kind of like leading me through, it would be helpful.[128]
+
+19: Yeah, I agree with X. I think it's like a culture issue. So, if it were the culture of the department in which you're working where this is just something that is standard practice. Then it might, I might be more likely to devote the time and energy to do it rather than trying to, you know. Find it within, you know, as a as working in a silo in just my research lab with my students and my research assistants.[129]
+
+24: I think one thing that could be a facilitator, or at least forcing people to do. Is like, I said, the NIH grants have requirements, updated requirements now for, like a very detailed plan about how you are gonna share your data. So, thinking through that ahead of time, like forcing you to think you through that ahead of time and come up with plan that you document and put in with grant applications, I would think, would likely be a facilitator.[130] I think that the other thing, though, is it's not really people in our positions, in tenure track jobs, we don't get credit anywhere in like the tenure process for using open science practices, well versus not using them. And it is extra time and effort to do. So, I think you know one other thing is like if this was valued by institutions more, if this was something where you got, I don't know it's recognized in some way, or it was prioritized by institutions, that that would also, I think, motivate people to do this more.[131][132]
+
+F: Thank you, just for the sake of time. I'm gonna have us continue on. What impact do you think open science practices could have on the field of communication sciences and disorders, you might consider both research and clinical practice.
+
+23: Well, I think one thing on my mind is, so. I I do research on cochlear implant. Like it's a kind of a patient group. So many of the study, you see, is very small simple size. So I'm wondering if there is open data everywhere, so someone can put them together. Maybe create like a larger data, a database, so that I can maybe help answer some of the questions I can't answer. I think there's something there. Sometimes I will frustrated. I can only get like 10 people for my study, and everyone's doing such things. So which may be okay, if some scenario but I don't for science. But so maybe that's not the best way to do this. So I think that will be very beneficial from that perspective.[133]
+
+F: Thank you for sharing. Other thoughts? Other impacts?
+
+21: I think open science practice also increase the impact of our research, and to make it accessible to clinicians and the community.[134] If we are able to keep our research as transparent as possible through open access journals.[135]
+
+20: I think. Oh, I I was gonna say I think it'll make the research more reproducible as well, because, even though it takes time, if people are encouraged either through positive or negative reinforcement to to do this, then, you know, if their data is formatted in a certain way, and they know how it's formatted. Then probably that code is gonna be more reproducible because you really had to think about presenting it to another audience to look at and use.[136]
+
+22: I think it also gets us out of as researchers. It gets us out of our silos. So it allows us to be more collaborative, which is very important, and it allows for also more interdisciplinary practices to happen as well. So, and I think it's just it's it's demonstrating your willingness to work with others, and that you care. And that you're willing to grow and change as well.[137] So, this is what I did now. Can't wait to do more in the future, hopefully, even better.[138] So that's kind of just in general what I kind of think and what I've heard others talk about with me about open science.
+
+F: Thank you. And related to that. What impact do you think open science practices could have on your career, if any?
+
+20: I think building community is a big one. The Neuro Academy workshop that I was involved in. I've met other people through that. [139]And then I've had invitations to give talks through that. So that's actually been a positive outcome of working with that community.[140]
+
+26: I don't know. I actually actually wonder what effect does it have if other people publish something using your data set that they got through open science. What is the impact of it?
+And I I don't know. I really don't know. Is it is going to positively affect your tenure evaluation, or is it just a publication for somebody else who mentions you in the acknowledgments? I have no idea.[141] To hit back back to the first question, the the previous question. For the field, I'm I'm I'm hoping that it will change focus of the field more onto like like truth-seeking versus career management. If that makes sense. But that’s a difficult one.[142]
+
+F: Thank you. Thank you for your thoughts. Any other final thoughts on this question about the impact of open science on your career?
+
+21: I'll just add two quick points. One is, I think, the it gives me confidence[143] and increase the reproducibility of my own research,[144] but it requires a lot of time investment to to get the process right.[145] So it does also have this sinking cost in in your, in your tenure track[146]. And I, yeah, I I I'm definitely on the fence, when, at the moment, I feel like that requires a lot more support than I have already had.[147][148]
+
+F: Thank you. I see we are right at our time here. And our last question is, what did we miss? Are there any final comments that anyone would like to make about open science practices that we haven't discussed today, and if you have to jump off, go ahead and do that as well. I want to be respectful of your time, but I'll just leave the floor open for any final comments
+
+19: I have to run. But thank you, X, and everybody. It was good to see you, meet, all of you. Thank you.
+
+20: I think, actually having this meeting was helpful. I learned some new things from this. So maybe there should be more things like this.
+
+F: Thank you. Any other thoughts?
+
+21: And what what would be the outcome of this research?
+
+F: So we are hoping that this will inform the future trainings that we design for CSD as part of Open CSD.Which is a new group that's forming. That's a kind of a sister organization to CSDisseminate, and it's focused solely just on open science. But there's so much to cover as we all have discussed today. So, we're hoping to find out what's of interest to the most amount of people. And that way we can really tailor our time that we're dedicating to what people really want to know and understand. And so we're hoping that over the next couple years that we'll start to be able to impact some of this, and share information in a really accessible way, so that more people can use open science practices. All right. Thank you all so much for your time I really appreciate it. It's been great to hear all of your thoughts.
+
+LPE-OS
+PE-OA
+F-OA, F-M
+PE-PR
+PE-OM
+PE-OA
+PE-OM
+F-OD, F-M, F-ETU
+KOP-OD
+PE-OD
+PE-OM
+B-OM, B-KOP
+KOP-OM
+PE-SA
+PE-OD
+PE-PR, B-PR, B-T
+U-OS
+B-OD, B-CX
+PE-OM, B-OM, B-NE
+LPE-OS
+WTL-OS
+LPE-OS
+A-OA
+B-OA, B-M
+A-OD
+PE-OM
+PE-OD
+B-OD, B-SL
+TE-W, TE-SA, R-UCSD
+I-SA
+PE-SA
+B-KJP
+B-SA, B-T
+PE-OA, PE-NIH
+LPE-OD
+KOP-NIH
+U-OD
+WTL-OD
+B-OD, B-T
+TE-OM, TE-PhD, TE-NE
+TE-W, TE-OM, TE-OS
+TE-OR
+TE-V
+TE-NE
+B-OS, B-T, B-TE
+U-OD
+B-OD, B-ID
+WTL-OD
+U-OD
+WTL-OD
+WTL-PR
+U-OS
+WTL-OPR
+B-OA, B-M
+KOP-SA
+U-OA, WTL-OA
+LP-Web, LP-A
+LP-WG
+LP-V, LP-I
+LP-HA, LP-WG, LP-I, LP-A
+LP-SD
+LP-WG
+LP-S, LP-A
+LP-V
+LP-H
+LP-I, LP-W
+LP-PC
+LP-A, B-T
+LP-Web, LP-A
+LP-PC
+LP-C, LP-SD
+B-PR, B-LOB
+B-T
+B-R
+B-LOB
+B-PR
+B-T, B-R
+F-PR, F-B
+LPE-PR
+I-PR
+F-PR, F-B
+F-PR, F-P
+F-JS
+B-SA, B-T, B-KJP
+B-SA, B-I
+B-SA, B-KJP
+MUR
+MUR
+B-I, B-SA
+MUR
+F-SA, F-IS
+R-UCSD, F-SA, F-TE, TE-W
+F-CR, F-SA
+F-SA, F-JS
+F-OS, F-WG
+B-OA, B-M, IE-OA
+B-WR
+PE-OA
+B-OA, B-M
+B-OA, B-M
+F-OA, F-M, F-IS
+F-OA, F-M
+F-M
+F-OA
+F-IS, F-M
+PE-OA
+F-OA, F-IS, F-M
+F-OA, F-IS
+B-OD, B-C, B-LOB
+B-OD, B-FR
+B-OD, B-CX
+B-FR
+B-DI
+B-T, B-CX
+B-OD
+B-T
+B-DI
+B-T
+B-FR
+B-T, B-R
+B-CX
+B-CX, B-T
+B-OD
+B-CR
+U-OD
+B-OD
+LPE-OD
+F-OD, F-CS, F-IS
+F-OD, F-E
+F-NIH, KOP-NIH
+F-E, F-B
+F-OD
+IOS-LS
+IOS-IC, IOS-A
+IOS-TR
+IOS-RR
+CI-FC
+E-OS, I-OS
+CI-FC
+CI-R
+IOS-D
+IOS-Tr
+CI-C
+CI-RR
+B-T
+B-LOB, B-NE
+B-R
+B-OS
+
+1
+
+
+
+
