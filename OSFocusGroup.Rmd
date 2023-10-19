@@ -10,40 +10,107 @@ library(viridis)  # install.packages('viridis')
 ```
 
 # Load the Transcripts
+Function for loading and cleaning the transcripts
 ```{r}
-transcript_R1_1 <- base::readLines("Data/Raw Data/Transcripts/MASTER_R1_Transcript_2023_05_15.txt") %>%
+readTranscript <- function(file, transcriptName, commentRows) {
+  transcript <- utils::read.delim(file,
+                                   fileEncoding="UTF-8") %>%
   as.data.frame() %>%
-  dplyr::rename(Comment = 1) %>%
-  dplyr::filter(Comment != "") %>%
-  dplyr::filter(grepl(pattern = ":",
-                      Comment)) %>%
-  dplyr::mutate(Transcript = "R1_1",
-                Participant = sub("\\:.*", "", Comment)) %>%
-  dplyr::relocate(Comment, .after = Participant)
-
-transcript_R1_2 <- base::readLines("Data/Raw Data/Transcripts/MASTER_R1_transcript_2023_05_22.txt") %>%
-  as.data.frame() %>%
-  dplyr::rename(Comment = 1) %>%
-  dplyr::filter(Comment != "") %>%
-  dplyr::filter(grepl(pattern = ":",
-                      Comment)) %>%
-  dplyr::mutate(Transcript = "R1_2",
-                Participant = sub("\\:.*", "", Comment)) %>%
-  dplyr::relocate(Comment, .after = Participant)
   
-transcript_nonR1_1 <- base::readLines("Data/Raw Data/Transcripts/MASTER CONSENSUS_NonR1_Transcript_2023_07_20.txt") %>%
-  as.data.frame() %>%
+  # Renaming the data to be Comments, and removing the empty lines
   dplyr::rename(Comment = 1) %>%
   dplyr::filter(Comment != "") %>%
-  dplyr::filter(between(row_number(),3,171)) %>%
-  dplyr::mutate(Transcript = "nonR1_1",
-                Participant = sub("\\:.*", "", Comment)) %>%
-  dplyr::relocate(Comment, .after = Participant)
-
   
+  # Filtering just the comments, exluding the comments
+  dplyr::filter(between(row_number(),commentRows[1],commentRows[2])) %>%
+  
+  # Creating a transcript column, generating the participant ID's from the columns, and prepping for when a comment was separated into two paragraphs
+  dplyr::mutate(Transcript = transcriptName,
+                Participant = gsub("\\:.*", "", Comment),
+                altParticipant = lag(Participant,1),
+                commentNumber = row_number(),
+                altCommentNumber = lag(commentNumber,1)) %>%
+  dplyr::relocate(Comment, .after = Participant) %>%
+  
+  # Merging when the comment went to a second line
+  dplyr::mutate(Participant = ifelse(Participant == Comment,
+                                     altParticipant,
+                                     Participant),
+                newLine = case_when(
+                  .$Participant %in% .$Comment ~ "TRUE",
+                  TRUE ~ "FALSE"
+                ),
+                commentNumber = ifelse(newLine == TRUE,
+                                     altCommentNumber,
+                                     commentNumber)) %>%
+  
+  # Finding the comments that went onto new lines and merging them with the previous comment
+    group_by(Transcript, Participant, commentNumber) %>% 
+    mutate(Comment = paste0(Comment, collapse = " ")) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(!c(altParticipant,altCommentNumber, newLine)) %>%
+    dplyr::distinct(.keep_all = T) %>%
+    
+  # Remaking the comment numbers with the new distinct data
+    dplyr::mutate(commentNumber = row_number()) %>%
+  
+  # Remove the square brackets that were inserted due to coding/comments
+  dplyr::mutate(Comment = gsub("\\[[^][]*]", "", Comment))
+  
+  return(transcript)
+}
 ```
 
-# Load the data
+Loading the transcripts
+```{r}
+# R1 1
+transcript_R1_1 <- readTranscript(
+  file = "Data/Raw Data/Transcripts/MASTER_R1_Transcript_2023_05_15.txt",
+  transcriptName = "R1_1",
+  commentRows = c(2,127)
+)
+
+# R1 2
+transcript_R1_2 <- readTranscript(
+  file = "Data/Raw Data/Transcripts/MASTER_R1_transcript_2023_05_22.txt",
+  transcriptName = "R1_2",
+  commentRows = c(2,134)
+)
+
+# nonR1 1
+transcript_nonR1_1 <- readTranscript(
+  file = "Data/Raw Data/Transcripts/MASTER CONSENSUS_NonR1_Transcript_2023_07_20.txt",
+  transcriptName = "nonR1_1",
+  commentRows = c(2,170)
+)
+
+# nonR1 2
+transcript_nonR1_2 <- readTranscript(
+  file = "Data/Raw Data/Transcripts/MASTER CONSENSUS_NonR1_Transcript_2023_05_15.txt",
+  transcriptName = "nonR1_2",
+  commentRows = c(2,112)
+)
+
+masterTranscript <- rbind(
+  transcript_R1_1,
+  transcript_R1_2,
+  transcript_nonR1_1,
+  transcript_nonR1_2)
+
+rm(transcript_R1_1,
+  transcript_R1_2,
+  transcript_nonR1_1,
+  transcript_nonR1_2)
+```
+
+# Load the Codes & References
+```{r}
+codeReferences <- read.csv(
+  file = "Data/Raw Data/Codes & References/CodeReferences_nonR1_1.csv",
+  encoding="UTF-8")
+```
+
+
 ```{r}
 R1_1 <- rio::import(
   file = "Data/Raw Data/Transcript Data/Codes_R1_1.csv",
