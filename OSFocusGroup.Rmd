@@ -1,0 +1,418 @@
+---
+title: "OS Focus Group"
+---
+
+
+# Packages
+```{r}
+library(tidyverse)
+library(viridis)  # install.packages('viridis')
+```
+
+# Load the Transcript Data
+```{r}
+R1_1 <- rio::import(
+  file = "Data/Raw Data/Transcript Data/Codes_R1_1.xlsx")
+
+rio::export(R1_1,
+            file = "Data/Raw Data/Transcript Data/Codes_R1_1.csv")
+
+R1_2 <- rio::import(
+  file = "Data/Raw Data/Transcript Data/Codes_R1_2.xlsx")
+
+rio::export(R1_2,
+            file = "Data/Raw Data/Transcript Data/Codes_R1_2.csv")
+
+nonR1_1 <- rio::import(
+  file = "Data/Raw Data/Transcript Data/Codes_nonR1_1.xlsx")
+
+rio::export(nonR1_1,
+            file = "Data/Raw Data/Transcript Data/Codes_nonR1_1.csv")
+
+nonR1_2 <- rio::import(
+  file = "Data/Raw Data/Transcript Data/Codes_nonR1_2.xlsx")
+
+rio::export(nonR1_2,
+            file = "Data/Raw Data/Transcript Data/Codes_nonR1_2.csv")
+  
+```
+
+# Load the data
+```{r}
+R1_1 <- rio::import(
+  file = "Data/Raw Data/Transcript Data/Codes_R1_1.csv",
+  header = F) %>%
+  dplyr::mutate(transcript = "R1_1")
+
+R1_2 <- rio::import(
+  file = "Data/Raw Data/Transcript Data/Codes_R1_2.csv",
+  header = F) %>%
+  dplyr::mutate(transcript = "R1_2")
+
+nonR1_1 <- rio::import(
+  file = "Data/Raw Data/Transcript Data/Codes_nonR1_1.csv",
+  header = F) %>%
+  dplyr::mutate(transcript = "nonR1_1")
+
+nonR1_2 <- rio::import(
+  file = "Data/Raw Data/Transcript Data/Codes_nonR1_2.csv",
+  header = F) %>%
+  dplyr::mutate(transcript = "nonR1_2")
+
+codes <- rbind(
+  R1_1,
+  R1_2,
+  nonR1_1,
+  nonR1_2
+) %>%
+  dplyr::select(!V2) %>%
+  dplyr::rename(initialCodes = 1) %>%
+  dplyr::mutate(Group = ifelse(grepl(
+    pattern = "nonR1",
+    x = transcript
+  ), "nonR1", "R1"))
+
+test <- 
+  base::strsplit(codes$initialCodes,",")
+
+test <- codes %>%
+  dplyr::mutate(splot = map(
+                            .f = base::strsplit(x = initialCodes,",")))
+
+test  <- str_split_fixed(codes$initialCodes, ",", 8)
+
+
+library(tidytext) # install.packages('tidytext')
+
+CodeCount <- codes %>%
+  unnest_tokens(initialCodes, initialCodes, token = 'regex', pattern=",",
+                to_lower = F) %>% 
+  dplyr::mutate(initialCodes = gsub(pattern = " ",
+                                    replacement = "",
+                                    x = initialCodes),
+                initialCodes = toupper(initialCodes)) %>%
+  group_by(
+    initialCodes,
+    #transcript,
+    Group) %>% 
+  summarize(Count = sum(n()))
+
+```
+
+# Sample Descriptives
+## Function
+```{r}
+practiceExp <- function(practice, codeData) {
+  
+practiceData <- codeData %>%
+  dplyr::filter(grepl(
+    pattern = practice,
+    x = initialCodes)) %>%
+  dplyr::mutate(
+    Practice = practice,
+    
+    # Training Experience
+    TE = case_when(
+      grepl(paste0("TE-",Practice), initialCodes) ~ 1,
+      TRUE ~ 0
+    ),
+    
+    # Uncertainty
+    U = case_when(
+      grepl(paste0("U-",Practice), initialCodes) ~ 1,
+      TRUE ~ 0
+    ),
+    
+    # Lack of Previous Experience
+    LPE = case_when(
+      grepl(paste0("LPE-",Practice), initialCodes) ~ 1,
+      TRUE ~ 0
+    ),
+    
+    # Aware
+    aware = case_when(
+      grepl(paste0("A-",Practice), initialCodes) ~ 1,
+      TRUE ~ 0
+    ),
+    
+    # Knowledge of Procedures
+    KOP = case_when(
+      grepl(paste0("KOP-",Practice), initialCodes) ~ 1,
+      TRUE ~ 0
+    ),
+    
+    # Previous Experience
+    PE = case_when(
+      grepl(paste0("PE-",Practice), initialCodes) ~ 1,
+      TRUE ~ 0
+    ),
+    
+    # Want to Learn
+    WTL = case_when(
+      grepl(paste0("WTL-",Practice), initialCodes) ~ 1,
+      TRUE ~ 0
+    ),
+    
+    # Intend
+    I = case_when(
+      grepl(paste0("I-",Practice), initialCodes) ~ 1,
+      TRUE ~ 0
+    ),
+  )
+
+return(practiceData)
+}
+```
+
+## Practices
+```{r}
+OER <-practiceExp(practice = "OER",
+                  codeData = codes)
+OD <- practiceExp(practice = "OD",
+                  codeData = codes)
+OA <- practiceExp(practice = "OA",
+                  codeData = codes)
+OM <-practiceExp(practice = "OM",
+                  codeData = codes)
+SA <-practiceExp(practice = "SA",
+                  codeData = codes)
+PR <-practiceExp(practice = "PR",
+                  codeData = codes)
+OS <-practiceExp(practice = "OS",
+                  codeData = codes)
+```
+## Plots
+### Experience
+```{r}
+experience <- rbind(
+  OD, OA, OM, SA, PR, OS
+) %>%
+  dplyr::group_by(Group, Practice) %>%
+  dplyr::summarise(
+    #U = sum(U),
+    LPE = sum(LPE),
+    #aware = sum(aware),
+    #KOP = sum(KOP),
+    TE = sum(TE),
+    PE = sum(PE),
+    I = sum(I)
+  ) %>%
+  tidyr::pivot_longer(cols = LPE:I,
+                      names_to = "ExpLvl",
+                      values_to = "Count") %>%
+  dplyr::mutate(Count = ifelse(ExpLvl == "LPE",Count*-1,Count),
+                Count = ifelse(ExpLvl == "U",Count*-1,Count),
+                ExpLvl = factor(ExpLvl,
+                                levels = c(
+                                  #"U",
+                                  "LPE",
+                                  #"aware",
+                                  #"KOP",
+                                  "I",
+                                  "TE",
+                                  "PE"),
+                                labels = c(
+                                  #"Uncertain about... (U)",
+                                  "No Exp with... (LPE)",
+                                   #"Aware of... (A)",
+                                   #"Knowledge of... (KOP)",
+                                  "Intends to use... (I)",
+                                  "Received training with... (TE)",
+                                  "Prior Exp with... (PE)")),
+                Practice = factor(Practice,
+                                  levels = c("OM",
+                                             "OA",
+                                             "PR",
+                                             "OD",
+                                             "SA",
+                                             "OS")),
+                Group = factor(Group,
+                               levels = c("nonR1",
+                                          "R1"),
+                               labels = c("Non-R1",
+                                          "R1")))
+
+experience %>%
+ggplot() +
+  aes(fill = ExpLvl,
+      y = Count,
+      x = Practice,
+      order = ExpLvl) + 
+    geom_bar(
+      position = "stack",
+      stat = "identity") +
+  theme_minimal() +
+  facet_wrap(~ Group) +
+  theme(panel.border = element_rect(color = "darkgrey",
+                                    fill = NA),
+        legend.position = "bottom") +
+  # Colors
+  scale_fill_viridis(discrete = TRUE,
+                     direction = -1) +
+  
+  # Labels
+  labs(
+    fill = "Experience Level:",
+    y = "Frequency Count",
+    title = "Experience by OS Practice and Institutional Setting"
+  )
+  
+ggsave(
+  filename = "Figures/ExperiencePlot.png",
+  height = 4,
+  width = 6,
+  units = "in",
+  scale = 1.4,
+  bg= "white"
+)
+```
+### Knowledge
+```{r}
+knowledge <- rbind(
+  OD, OA, OM, SA, PR, OS
+) %>%
+  dplyr::group_by(Group, Practice) %>%
+  dplyr::summarise(
+    U = sum(U),
+    #LPE = sum(LPE),
+    aware = sum(aware),
+    KOP = sum(KOP),
+    #TE = sum(TE),
+    #PE = sum(PE),
+    #I = sum(I)
+  ) %>%
+  tidyr::pivot_longer(cols = U:KOP,
+                      names_to = "ExpLvl",
+                      values_to = "Count") %>%
+  dplyr::mutate(
+                Count = ifelse(ExpLvl == "U",Count*-1,Count),
+                ExpLvl = factor(ExpLvl,
+                                levels = c(
+                                  "U",
+                                  #"LPE",
+                                  "aware",
+                                  "KOP"),
+                                  #"I",
+                                  #"TE",
+                                  #"PE",
+
+                                labels = c(
+                                  "Uncertain about... (U)",
+                                  #"No Exp with... (LPE)",
+                                   "Aware of... (A)",
+                                   "Knowledge of... (KOP)"),
+                                  #"Intends to use... (I)",
+                                  #"Received training with... (TE)",
+                                  #"Prior Exp with... (PE)",
+                                  ),
+                Practice = factor(Practice,
+                                  levels = c("OM",
+                                             "OA",
+                                             "PR",
+                                             "OD",
+                                             "SA",
+                                             "OS")),
+                Group = factor(Group,
+                               levels = c("nonR1",
+                                          "R1"),
+                               labels = c("Non-R1",
+                                          "R1")))
+
+knowledge %>%
+ggplot() +
+  aes(fill = ExpLvl,
+      y = Count,
+      x = Practice,
+      order = ExpLvl) + 
+    geom_bar(
+      position = "stack",
+      stat = "identity") +
+  theme_minimal() +
+  facet_wrap(~ Group) +
+  theme(panel.border = element_rect(color = "darkgrey",
+                                    fill = NA),
+        legend.position = "bottom") +
+  # Colors
+  scale_fill_viridis(discrete = TRUE,
+                     direction = -1) +
+  
+  # Labels
+  labs(
+    fill = "Knowledge Level:",
+    y = "Frequency Count",
+    title = "Knowledge by OS Practice and Institutional Setting"
+  )
+  
+ggsave(
+  filename = "Figures/KnowledgePlot.png",
+  height = 4,
+  width = 6,
+  units = "in",
+  scale = 1.4,
+  bg= "white"
+)
+```
+# Codebook
+```{r}
+
+subcatCodebook <- rio::import("Data/Raw Data/Codebook Data/Subcategory Codebook.csv") %>%
+  dplyr::rename(`Axial Code` = `Code abbreviation`) %>%
+  dplyr::select(Subcategory:`Axial Code`)
+
+masterCodebook <- rio::import("Data/Raw Data/Codebook Data/Austin's Master Codebook.csv") %>%
+  dplyr::filter(`Axial Code` != "") %>%
+  dplyr::select(!RQ) %>%
+  base::merge(., subcatCodebook,
+               all.x = T) %>%
+  dplyr::relocate(Subcategory:RQ, .before = `Axial Code`) %>%
+  dplyr::select(!c(V7:`Consensus?`))
+
+rio::export(masterCodebook,
+            file = "Data/Prepped Data/Master Codebook.csv")
+```
+
+# RQ1
+```{r}
+
+freqCount <- CodeCount %>%
+  dplyr::rename(`Initial Code` = initialCodes)
+
+masterCodebook <- rio::import(
+            file = "Data/Prepped Data/Master Codebook.csv") %>%
+  base::merge(., freqCount, all.y = T) %>%
+  dplyr::filter(!is.na(RQ))
+
+RQ <- masterCodebook %>%
+  dplyr::filter(RQ != "N") %>%
+  dplyr::mutate(match = ifelse(`Axial Code` == `Initial Code`,TRUE,FALSE)) %>%
+  dplyr::filter(match == FALSE) %>%
+    arrange(`Axial Code`)
+
+library(ggalluvial) # install.packages("ggalluvial")
+
+RQ %>%
+  ggplot() +
+  aes(
+    #axis1 = Subcategory,
+      axis1 = `Axial Code`,
+      axis2 = `Initial Code`,
+      y = Count,
+      ) +
+  scale_x_discrete(limits = c(
+    #"Subcategory",
+                              "Axial Code",
+                              "Initial Code"),
+                   expand = c(.2, .05)) +
+  geom_alluvium(aes(fill = Group)) +
+  geom_stratum() +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
+  theme_minimal()
+
+ggsave(plot = last_plot(),
+       file = "Figures/RQ1.png",
+       height = 8,
+       width = 6,
+       units = "in")
+
+```
+
