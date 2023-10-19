@@ -1,39 +1,45 @@
 ---
-title: "OS Focus Group"
+title: "OS Focus Group: Data Prep"
 ---
 
 
 # Packages
 ```{r}
-library(tidyverse)
+library(tidyverse) # install.packages('tidyverse')
 library(viridis)  # install.packages('viridis')
 ```
 
-# Load the Transcript Data
+# Load the Transcripts
 ```{r}
-R1_1 <- rio::import(
-  file = "Data/Raw Data/Transcript Data/Codes_R1_1.xlsx")
+transcript_R1_1 <- base::readLines("Data/Raw Data/Transcripts/MASTER_R1_Transcript_2023_05_15.txt") %>%
+  as.data.frame() %>%
+  dplyr::rename(Comment = 1) %>%
+  dplyr::filter(Comment != "") %>%
+  dplyr::filter(grepl(pattern = ":",
+                      Comment)) %>%
+  dplyr::mutate(Transcript = "R1_1",
+                Participant = sub("\\:.*", "", Comment)) %>%
+  dplyr::relocate(Comment, .after = Participant)
 
-rio::export(R1_1,
-            file = "Data/Raw Data/Transcript Data/Codes_R1_1.csv")
+transcript_R1_2 <- base::readLines("Data/Raw Data/Transcripts/MASTER_R1_transcript_2023_05_22.txt") %>%
+  as.data.frame() %>%
+  dplyr::rename(Comment = 1) %>%
+  dplyr::filter(Comment != "") %>%
+  dplyr::filter(grepl(pattern = ":",
+                      Comment)) %>%
+  dplyr::mutate(Transcript = "R1_2",
+                Participant = sub("\\:.*", "", Comment)) %>%
+  dplyr::relocate(Comment, .after = Participant)
+  
+transcript_nonR1_1 <- base::readLines("Data/Raw Data/Transcripts/MASTER CONSENSUS_NonR1_Transcript_2023_07_20.txt") %>%
+  as.data.frame() %>%
+  dplyr::rename(Comment = 1) %>%
+  dplyr::filter(Comment != "") %>%
+  dplyr::filter(between(row_number(),3,171)) %>%
+  dplyr::mutate(Transcript = "nonR1_1",
+                Participant = sub("\\:.*", "", Comment)) %>%
+  dplyr::relocate(Comment, .after = Participant)
 
-R1_2 <- rio::import(
-  file = "Data/Raw Data/Transcript Data/Codes_R1_2.xlsx")
-
-rio::export(R1_2,
-            file = "Data/Raw Data/Transcript Data/Codes_R1_2.csv")
-
-nonR1_1 <- rio::import(
-  file = "Data/Raw Data/Transcript Data/Codes_nonR1_1.xlsx")
-
-rio::export(nonR1_1,
-            file = "Data/Raw Data/Transcript Data/Codes_nonR1_1.csv")
-
-nonR1_2 <- rio::import(
-  file = "Data/Raw Data/Transcript Data/Codes_nonR1_2.xlsx")
-
-rio::export(nonR1_2,
-            file = "Data/Raw Data/Transcript Data/Codes_nonR1_2.csv")
   
 ```
 
