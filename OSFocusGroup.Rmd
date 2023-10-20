@@ -42,7 +42,15 @@ readTranscript <- function(file, transcriptName, commentRows) {
                 ),
                 commentNumber = ifelse(newLine == TRUE,
                                      altCommentNumber,
-                                     commentNumber)) %>%
+                                     commentNumber),
+                commentNumber = case_when(
+                  Transcript == "nonR1_2" & commentNumber == 58 ~ 59,
+                  TRUE ~ commentNumber
+                ),
+                Participant = case_when(
+                  Participant == "So yeah, I I did make myself a personal website, and it does take a lot of time and work, and" ~ "11",
+                  TRUE ~ Participant
+                )) %>%
   
   # Finding the comments that went onto new lines and merging them with the previous comment
     group_by(Transcript, Participant, commentNumber) %>% 
@@ -55,7 +63,8 @@ readTranscript <- function(file, transcriptName, commentRows) {
     dplyr::mutate(commentNumber = row_number()) %>%
   
   # Remove the square brackets that were inserted due to coding/comments
-  dplyr::mutate(Comment = gsub("\\[[^][]*]", "", Comment))
+  dplyr::mutate(Comment = gsub("\\[[^][]*]", "", Comment),
+                Participant = gsub("\\[[^][]*]", "", Participant))
   
   return(transcript)
 }
@@ -101,13 +110,67 @@ rm(transcript_R1_1,
   transcript_R1_2,
   transcript_nonR1_1,
   transcript_nonR1_2)
+
+# Export the codeReferences
+utils::write.csv(
+  x = masterTranscript,
+  file = "Data/Prepped Data/masterTranscript.csv",
+  fileEncoding = "UTF-8")
 ```
 
 # Load the Codes & References
 ```{r}
-codeReferences <- read.csv(
+codeReferences_nonR1_1 <- read.csv(
   file = "Data/Raw Data/Codes & References/CodeReferences_nonR1_1.csv",
-  encoding="UTF-8")
+  encoding="UTF-8") %>%
+  dplyr::mutate(Transcript = "nonR1_1")
+
+codeReferences_nonR1_2 <- read.csv(
+  file = "Data/Raw Data/Codes & References/CodeReferences_nonR1_2.csv",
+  encoding="UTF-8") %>%
+  dplyr::mutate(Transcript = "nonR1_2")
+
+codeReferences_R1_1 <- read.csv(
+  file = "Data/Raw Data/Codes & References/CodeReferences_R1_1.csv",
+  encoding="UTF-8") %>%
+  dplyr::mutate(Transcript = "R1_1")
+
+codeReferences_R1_2 <- read.csv(
+  file = "Data/Raw Data/Codes & References/CodeReferences_R1_2.csv",
+  encoding="UTF-8") %>%
+  dplyr::mutate(Transcript = "R1_2")
+
+codeReferences <- rbind(
+  codeReferences_nonR1_1,
+  codeReferences_nonR1_2,
+  codeReferences_R1_1,
+  codeReferences_R1_2
+) %>%
+  dplyr::relocate(Transcript, .before = Page) %>%
+  dplyr::rename(Code = Comment,
+                Comment = `Reference.Text`,
+                Date = `Date...Time`) %>%
+  
+  # Filtering out non-code commments
+  dplyr::filter(!grepl(pattern = "_Re-opened_", x = Code)) %>%
+  dplyr::filter(!grepl(pattern = "_Marked as resolved_", x = Code)) %>%
+  dplyr::filter(!grepl(pattern = "started coding first 3 responses for", x = Code)) %>%
+  dplyr::filter(!grepl(pattern = "Note:", x = Code))
+
+# Export the codeReferences
+utils::write.csv(
+  x = codeReferences,
+  file = "Data/Prepped Data/codeReferences.csv",
+  fileEncoding = "UTF-8")
+```
+
+
+```{r}
+rm(codeReferences_nonR1_1,
+  codeReferences_nonR1_2,
+  codeReferences_R1_1,
+  codeReferences_R1_2
+)
 ```
 
 
