@@ -7,6 +7,10 @@ title: "OS Focus Group: Data Prep"
 ```{r}
 library(tidyverse) # install.packages('tidyverse')
 library(viridis)  # install.packages('viridis')
+library(wordcloud) # install.packages('wordcloud')
+library(tm) # install.packages('tm')
+library(data.tree) # install.packages('data.tree')
+
 ```
 
 # Load the Transcripts
@@ -162,10 +166,7 @@ utils::write.csv(
   x = codeReferences,
   file = "Data/Prepped Data/codeReferences.csv",
   fileEncoding = "UTF-8")
-```
 
-
-```{r}
 rm(codeReferences_nonR1_1,
   codeReferences_nonR1_2,
   codeReferences_R1_1,
@@ -173,67 +174,269 @@ rm(codeReferences_nonR1_1,
 )
 ```
 
-
+# Codebook Data
 ```{r}
-R1_1 <- rio::import(
-  file = "Data/Raw Data/Transcript Data/Codes_R1_1.csv",
-  header = F) %>%
-  dplyr::mutate(transcript = "R1_1")
-
-R1_2 <- rio::import(
-  file = "Data/Raw Data/Transcript Data/Codes_R1_2.csv",
-  header = F) %>%
-  dplyr::mutate(transcript = "R1_2")
-
-nonR1_1 <- rio::import(
-  file = "Data/Raw Data/Transcript Data/Codes_nonR1_1.csv",
-  header = F) %>%
-  dplyr::mutate(transcript = "nonR1_1")
-
-nonR1_2 <- rio::import(
-  file = "Data/Raw Data/Transcript Data/Codes_nonR1_2.csv",
-  header = F) %>%
-  dplyr::mutate(transcript = "nonR1_2")
-
-codes <- rbind(
-  R1_1,
-  R1_2,
-  nonR1_1,
-  nonR1_2
+cb_Initial <- read.csv(
+  file = "Data/Raw Data/Codebook Data/Initial Codebook.csv",
+  fileEncoding = "UTF-8"
 ) %>%
-  dplyr::select(!V2) %>%
-  dplyr::rename(initialCodes = 1) %>%
-  dplyr::mutate(Group = ifelse(grepl(
-    pattern = "nonR1",
-    x = transcript
-  ), "nonR1", "R1"))
+  dplyr::rename(initialCode = 2,
+                codeName = 3,
+                definition = 4) %>%
+  dplyr::select(initialCode:definition) %>%
+  dplyr::filter(initialCode != "")
 
-test <- 
-  base::strsplit(codes$initialCodes,",")
+cb_Axial <- read.csv(
+  file = "Data/Raw Data/Codebook Data/Axial Codebook.csv",
+  fileEncoding = "UTF-8"
+) %>%
+  dplyr::rename(axialCode = 2,
+                initialCode = 3,
+                codeName = 4,
+                definition = 5) %>%
+  dplyr::select(axialCode:definition) %>%
+  dplyr::filter(initialCode != "")
 
-test <- codes %>%
-  dplyr::mutate(splot = map(
-                            .f = base::strsplit(x = initialCodes,",")))
+cb_subcat <- read.csv(
+  file = "Data/Raw Data/Codebook Data/Subcategory Codebook.csv",
+  fileEncoding = "UTF-8"
+) %>%
+  dplyr::rename(axialCode = 3,
+                codeName = 4,
+                keywords = 5,
+                definition = 6) %>%
+  dplyr::select(1:axialCode) %>%
+  dplyr::filter(axialCode != "")
 
-test  <- str_split_fixed(codes$initialCodes, ",", 8)
+# Creating the Master
+cb_master <- base::merge(cb_Axial,cb_subcat, all = TRUE, no.dups = F) %>%
+  dplyr::select(Subcategory, RQ, axialCode, initialCode, codeName, definition)
+  
+# Export the codeReferences
+utils::write.csv(
+  x = cb_master,
+  file = "Data/Prepped Data/Master Codebook.csv",
+  fileEncoding = "UTF-8")
 
+rm(cb_Axial,
+   cb_Initial,
+   cb_subcat)
+```
 
-library(tidytext) # install.packages('tidytext')
+# Obtaining Frequency Counts
+```{r}
 
-CodeCount <- codes %>%
-  unnest_tokens(initialCodes, initialCodes, token = 'regex', pattern=",",
-                to_lower = F) %>% 
-  dplyr::mutate(initialCodes = gsub(pattern = " ",
-                                    replacement = "",
-                                    x = initialCodes),
-                initialCodes = toupper(initialCodes)) %>%
-  group_by(
-    initialCodes,
-    #transcript,
-    Group) %>% 
-  summarize(Count = sum(n()))
+codeReferences <- utils::read.csv(
+  file = "Data/Prepped Data/codeReferences.csv",
+  fileEncoding = "UTF-8") %>%
+  dplyr::mutate(originalCode = Code) %>%
+  tidyr::separate(Code, c("1", "2", "3", "4", "5", "6", "7"), ",") %>%
+  tidyr::pivot_longer(cols = `1`:`7`,
+                      values_to = "code") %>%
+  dplyr::select(!name) %>%
+  dplyr::filter(!is.na(code)) %>%
+  dplyr::mutate(code = gsub(pattern = " ",
+                            replacement = "",
+                            code)) %>%
+  dplyr::select(!X)
+
+codeFreq <- codeReferences %>%
+  dplyr::group_by(code) %>%
+  dplyr::summarise(N = NROW(code),
+                   Examples = paste0(Comment, collapse = " // ")) %>%
+  dplyr::rename(initialCode = code)
+
+cb_master <- utils::read.csv(
+  file = "Data/Prepped Data/Master Codebook.csv",
+  fileEncoding = "UTF-8") %>%
+  base::merge(., codeFreq) %>%
+  dplyr::relocate(initialCode, .after = axialCode) %>%
+  dplyr::select(!X) %>%
+  dplyr::mutate(freqWords = tm::tm_map(Examples, removePunctuation))
+
+comments_clean <- VCorpus(VectorSource(cb_master$Examples)) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(content_transformer(tolower)) %>%
+  tm_map(removeNumbers) %>%
+  tm_map(stripWhitespace) %>%
+  tm_map(removeWords, stopwords('english')) %>% 
+                  tidytext::unnest_tokens(output = word, input = Text) 
+
+test <- data_frame(Text = cb_master$Examples) %>%
+  tidytext::unnest_tokens(output = word, input = Text) %>%
+                   anti_join(tidytext::stop_words) %>%
+  count(word, sort = TRUE) %>%
+  dplyr::filter(word != "yeah") %>%
+  dplyr::mutate(word = case_when(
+    word == "osf" ~ "OSF",
+    word == "nih" ~ "NIH",
+    TRUE ~ word
+  ))
+
+wordcloud(test$word, freq = test$n, scale = c(2,1), min.freq = 30,
+          colors = colorRampPalette(brewer.pal(9,"Blues"))(32)[seq(8,32,6)])
+
+ggsave(plot = last_plot())
+
+utils::write.csv(
+  x = cb_master,
+  file = "Data/Prepped Data/Master Codebook_examples.csv",
+  fileEncoding = "UTF-8")
+```
+
+# Trying to make a tree
+```{r}
+tree <- cb_master %>%
+  dplyr::select(Subcategory, axialCode, initialCode) %>%
+  dplyr::filter(Subcategory != "") %>%
+  arrange(initialCode) %>%
+  arrange(axialCode) %>%
+  arrange(Subcategory)
+d1 = tree %>%
+  dplyr::select(Subcategory, axialCode) %>%
+  dplyr::rename(from = 1,
+                to = 2)
+d2 = tree %>%
+  dplyr::select(axialCode, initialCode) %>%
+  dplyr::rename(from = 1,
+                to = 2)
+
+hierarchy <- rbind(d1, d2)
+
+vertices <- data.frame(name = unique(c(as.character(hierarchy$from), as.character(hierarchy$to))) ) 
+
+g <- igraph::graph_from_data_frame(hierarchy, vertices=NULL)
+
+library(ggraph) # install.packages('ggraph')
+treePlot <- ggraph(g,
+                   layout='dendrogram',
+                   circular=FALSE) + 
+  geom_edge_link() + 
+  geom_node_label(aes(label=names(V(g))),
+                  size=2,
+                  nudge_y=0) + 
+  scale_y_reverse()  +
+  coord_flip() +
+  theme_classic()
+treePlot
+
+lay = layout.reingold.tilford(g) 
+par(mar=c(0,0,0,0))
+plot(g, layout=-lay[, 2:1],vertex.label.cex=0.7,
+vertex.size=1,edge.arrow.size= 0.4)
+
+ggsave(treePlot,
+       filename = "Figures/TreePlot.png",
+       height = 10,
+       width = 6.5,
+       units = "in",
+       scale = 1)
+```
+```{r}
+library(treemap)
 
 ```
+
+
+
+```{r}
+# Load data
+data(USArrests)
+
+# distance matrix 
+dist_usarrests = dist(USArrests)
+
+# hierarchical clustering analysis
+clus_usarrests = hclust(dist_usarrests, method = "ward.D")
+
+# Retreive data
+class.dat <- classification(c("Pseudomonas putida", "Pseudomonas aeruginosa","Enterobacter xiangfangensis","Salmonella enterica","Klebsiella pneumoniae"), db = 'ncbi')
+
+# Specify interest
+interest <- c('superkingdom', 'phylum','class','order','genus','species')
+
+# Convert to wide matrix
+df2 <- bind_rows(class.dat, .id = "column_label") %>%
+  dplyr::select(-id) %>% 
+  filter(rank %in% interest) %>%
+  spread(rank, name) %>%
+  dplyr::select(-column_label) %>%
+  dplyr::select(interest) %>% # we need the order
+  as.matrix()
+
+# Empty parent child matrix
+parent.child <- matrix(nrow=0,ncol=2)
+
+# Add data to parent child
+for (i in 1:(ncol(df2)-1)){
+  parent.child <- rbind(parent.child,df2[,c(i,i+1)])
+}
+
+# To dataframe and add colnmaes
+parent.child <- as.data.frame(parent.child)
+colnames(parent.child) <- c('from', 'to')
+
+# Convert this to a ggraph
+g <- graph_from_data_frame(parent.child)
+ggraph(g,layout='dendrogram',circular=FALSE) + 
+  geom_edge_link() + 
+  geom_node_label(aes(label=names(V(g))),size=3,nudge_y=-0.1) + 
+  scale_y_reverse(labels = interest)  + coord_flip() +
+  theme_classic()
+```
+
+
+```{r}
+```
+
+
+```{r}
+# Load data
+data(USArrests)
+# Compute distances and hierarchical clustering
+dd <- dist(scale(USArrests), method = "euclidean")
+hc <- hclust(dd, method = "ward.D2")
+    
+treeData <- cb_master %>%
+  dplyr::select(Subcategory, axialCode, initialCode) %>%
+  dplyr::filter(Subcategory != "") %>%
+  arrange(Subcategory)
+
+ df <- data.frame(x=c('A','A','B','B','B'), y=c('Ab','Ac','Ba', 'Ba','Bd'), z=c('Abb','Acc','Bad', 'Bae','Bdd'))
+ test <- stree(df, level = 1)
+
+#Tree
+x <- maketreelist(treeData)
+
+library(igraph) # install.packages('igraph')
+g <- graph.data.frame(x)
+plot(g)
+
+
+level <- c(1, 2, 3, 4, 4, 3, 4, 4, 1, 2, 3)
+value <- letters[1:11]
+
+library(tidyverse)
+library(data.tree)
+library(networkD3) # install.packages('networkD3')
+
+data.frame(level, value, stringsAsFactors = F) %>%
+  mutate(row = row_number()) %>%
+  mutate(level2 = level, value2 = value) %>%
+  spread(level2, value2) %>%
+  mutate(`0` = "") %>%
+  arrange(row) %>%
+  fill(-level, -value, -row) %>%
+  gather(parent_level, parent, -level, -value, -row) %>%
+  filter(parent_level == level - 1) %>%
+  arrange(row) %>%
+  select(parent, child = value) %>%
+  data.tree::FromDataFrameNetwork() %>%
+  data.tree::ToListExplicit(unname = TRUE) %>%
+  networkD3::radialNetwork()
+```
+
+
 
 # Sample Descriptives
 ## Function
