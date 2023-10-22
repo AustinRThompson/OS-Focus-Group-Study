@@ -57,8 +57,8 @@ readTranscript <- function(file, transcriptName, commentRows) {
                 )) %>%
   
   # Finding the comments that went onto new lines and merging them with the previous comment
-    group_by(Transcript, Participant, commentNumber) %>% 
-    mutate(Comment = paste0(Comment, collapse = " ")) %>%
+    dplyr::group_by(Transcript, Participant, commentNumber) %>% 
+    dplyr::mutate(Comment = paste0(Comment, collapse = " ")) %>%
     dplyr::ungroup() %>%
     dplyr::select(!c(altParticipant,altCommentNumber, newLine)) %>%
     dplyr::distinct(.keep_all = T) %>%
@@ -223,13 +223,15 @@ rm(cb_Axial,
    cb_subcat)
 ```
 
-# Obtaining Frequency Counts
+# Merging codeReferences and masterTrasncript
 ```{r}
+stringr::str_detect(string = masterTranscript$Comment,
+                    pattern = codeReferences$Comment[1])
 
 codeReferences <- utils::read.csv(
   file = "Data/Prepped Data/codeReferences.csv",
   fileEncoding = "UTF-8") %>%
-  dplyr::mutate(originalCode = Code) %>%
+  dplyr::mutate(fullCode = Code) %>%
   tidyr::separate(Code, c("1", "2", "3", "4", "5", "6", "7"), ",") %>%
   tidyr::pivot_longer(cols = `1`:`7`,
                       values_to = "code") %>%
@@ -238,9 +240,70 @@ codeReferences <- utils::read.csv(
   dplyr::mutate(code = gsub(pattern = " ",
                             replacement = "",
                             code)) %>%
-  dplyr::select(!X)
+  dplyr::select(!X) %>%
+  dplyr::mutate(fullComment = NA,
+                Participant = NA,
+                Comment = gsub(pattern = "<P>",
+                               replacement = " ",
+                               x = Comment))
 
-codeFreq <- codeReferences %>%
+NC <- 1
+while(NC <= NROW(codeReferences)) {
+  comment <- masterTranscript %>%
+    dplyr::filter(stringr::str_detect(string = masterTranscript$Comment,
+                    pattern = fixed(codeReferences$Comment[NC]))) %>%
+    dplyr::filter(Transcript == codeReferences$Transcript[NC])
+  
+  if (NROW(comment) == 0) {
+    commentReference <- codeReferences %>%
+    slice(NC)
+  } else {
+    commentReference <- codeReferences %>%
+    slice(NC) %>%
+    dplyr::mutate(fullComment = comment$Comment,
+                  Participant = comment$Participant)
+  }
+  
+  
+  if(NC == 1) {
+    allcodeReferences <- commentReference
+  } else {
+    allcodeReferences <- allcodeReferences %>%
+      rbind(.,commentReference)
+  }
+  
+  NC <- NC + 1
+  
+  rm(commentReference)
+}
+
+
+```
+
+# Obtaining Frequency Counts
+```{r}
+# Getting rid of redundancy
+uniqueCodes <- allcodeReferences %>%
+    dplyr::group_by(Transcript, Participant, code) %>% 
+    dplyr::summarize(Comment = paste0(Comment, collapse = " // ")) %>%
+    dplyr::ungroup()
+
+# Experience
+experience <- uniqueCodes %>%
+  dplyr::filter(stringr::str_detect(code,
+                                    pattern = fixed("PE-")))
+```
+
+# RQ1
+1: What do assistant professors in CSD perceive to be barriers and facilitators to their use of open science practices?
+```{r}
+
+```
+
+
+# Cloud Map
+```{r}
+codeFreq <- uniqueCodes %>%
   dplyr::group_by(code) %>%
   dplyr::summarise(N = NROW(code),
                    Examples = paste0(Comment, collapse = " // ")) %>%
