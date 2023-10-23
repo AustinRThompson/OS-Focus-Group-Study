@@ -10,10 +10,12 @@ library(viridis)  # install.packages('viridis')
 library(wordcloud) # install.packages('wordcloud')
 library(tm) # install.packages('tm')
 library(data.tree) # install.packages('data.tree')
-
+library(extrafont) # install.packages('extrafont')
+loadfonts(device = "all")
 ```
 
-# Load the Transcripts
+# Loading the Data
+## Load the Transcripts
 Function for loading and cleaning the transcripts
 ```{r}
 readTranscript <- function(file, transcriptName, commentRows) {
@@ -122,7 +124,7 @@ utils::write.csv(
   fileEncoding = "UTF-8")
 ```
 
-# Load the Codes & References
+## Load the Codes & References
 ```{r}
 codeReferences_nonR1_1 <- read.csv(
   file = "Data/Raw Data/Codes & References/CodeReferences_nonR1_1.csv",
@@ -174,7 +176,7 @@ rm(codeReferences_nonR1_1,
 )
 ```
 
-# Codebook Data
+## Codebook Data
 ```{r}
 cb_Initial <- read.csv(
   file = "Data/Raw Data/Codebook Data/Initial Codebook.csv",
@@ -223,7 +225,7 @@ rm(cb_Axial,
    cb_subcat)
 ```
 
-# Merging codeReferences and masterTrasncript
+## Merging codeReferences and masterTrasncript
 ```{r}
 stringr::str_detect(string = masterTranscript$Comment,
                     pattern = codeReferences$Comment[1])
@@ -280,6 +282,15 @@ while(NC <= NROW(codeReferences)) {
 
 ```
 
+# Descriptive Data
+## Participants
+```{r}
+masterTranscript %>%
+  dplyr::filter(Participant != "F") %>%
+  dplyr::group_by(Transcript) %>%
+  dplyr::summarise(N = NROW(unique(Participant)))
+```
+
 # Obtaining Frequency Counts
 ```{r}
 # Getting rid of redundancy
@@ -297,9 +308,172 @@ experience <- uniqueCodes %>%
 # RQ1
 1: What do assistant professors in CSD perceive to be barriers and facilitators to their use of open science practices?
 ```{r}
+RQ1_cb <- cb_master %>%
+  dplyr::filter(RQ == "1,2")
 
+RQ1_codes <- uniqueCodes %>%
+  dplyr::rename(initialCode = code) %>%
+  base::merge(., RQ1_cb)
+
+RQ1_ic_summary <- RQ1_codes %>%
+  dplyr::group_by(Subcategory,initialCode) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N)
+
+RQ1_sc_summary <- RQ1_codes %>%
+  dplyr::group_by(Subcategory) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N) %>%
+  dplyr::mutate(Subcategory = factor(Subcategory,
+                                     levels = rev(Subcategory)))
+
+Pal <- c("#DD5846",
+         "#E68275",
+         "#EBA240",
+         "#EFB66C",
+         "#4283C3",
+         "#73A3D3",
+         "#709952",
+         "#7DA262",
+         "#B58ABA")
+
+RQ1_sc_summary %>%
+  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
+                label = case_when(
+                  proportion < 10 ~ NA,
+                  TRUE ~ label
+                )) %>%
+  ggplot() +
+  aes(y = proportion,
+      x = 1,
+      fill = Subcategory) +
+  geom_col() +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5),
+            color = "white") +
+  scale_fill_manual(values = Pal) +
+  theme_void() +
+  theme(legend.position = "right")
+  
+
+ggsave(
+  plot = last_plot(),
+  filename = "Figures/RQ1_subcat.png",
+  height = 6,
+  width = 4.5,
+  units = "in",
+  scale = 1
+)
 ```
 
+# RQ2
+2. How do the perceived barriers and facilitators compare between those at R1 institutions and those at institutions with other classifications?
+```{r}
+RQ2_cb <- cb_master %>%
+  dplyr::filter(RQ == "1,2")
+
+RQ2_codes <- uniqueCodes %>%
+  dplyr::rename(initialCode = code) %>%
+  dplyr::mutate(Group = case_when(
+    Transcript == "R1_1" ~ "R1",
+    Transcript == "R1_2" ~ "R1",
+    Transcript == "nonR1_1" ~ "non-R1",
+    Transcript == "nonR1_2" ~ "non-R1",
+  )) %>%
+  base::merge(., RQ2_cb)
+
+RQ2_ic_summary <- RQ2_codes %>%
+  dplyr::group_by(Group,Subcategory,initialCode) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N)
+
+RQ2_sc_summary <- RQ2_codes %>%
+  dplyr::group_by(Group, Subcategory) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::mutate(Subcategory = factor(Subcategory,
+                                     levels = rev(RQ1_sc_summary$Subcategory),
+                                     labels = c(
+                                       "Resources",
+                                       "Attitudes",
+                                       "Study Components",
+                                       "Expectations, Policies, & Regulations",
+                                       "Training & Knowledge",
+                                       "Working with Others",
+                                       "Inequality",
+                                       "Personal",
+                                       "Past Experience"
+                                     ))) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N)
+
+Pal <- c("#DD5846",
+         "#E68275",
+         "#EBA240",
+         "#EFB66C",
+         "#4283C3",
+         "#73A3D3",
+         "#709952",
+         "#7DA262",
+         "#B58ABA")
+
+RQ2_sc_summary %>%
+  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
+                label = case_when(
+                  proportion < 3 ~ NA,
+                  TRUE ~ label
+                )) %>%
+  ggplot() +
+  aes(y = proportion,
+      x = Group,
+      fill = Subcategory) +
+  geom_col() +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5),
+            color = "white") +
+  scale_fill_manual(values = Pal) +
+  theme_void() +
+  facet_wrap(~Group, scales = "free_x") +
+  theme(legend.position = "right")
+
+RQ2_sc_summary %>%
+    dplyr::mutate(label = paste0("  ", Group," (",round(proportion,digits = 2),"%)")) %>%
+  ggplot() +
+  aes(y = proportion,
+      x = Subcategory,
+      fill = Subcategory,
+      group = Group,
+      alpha = Group,
+      label = label) +
+  geom_bar(position="dodge", stat="identity") +
+  geom_text(position = position_dodge2(width = 0.9, preserve = "single"),
+            alpha = .5,
+            vjust=0.25,
+            hjust=0) +
+  scale_fill_manual(values = Pal) +
+  scale_alpha_manual(values = c(.6,1)) +
+  theme_void() +
+  theme(legend.position = "none",
+        axis.text.y = element_text(hjust = 1),
+        text=element_text(family="Arial")) +
+  coord_flip(ylim = c(0,50))
+  
+
+ggsave(
+  plot = last_plot(),
+  filename = "Figures/RQ2_subcat.png",
+  height = 6,
+  width = 8,
+  units = "in",
+  scale = 1
+)
+```
 
 # Cloud Map
 ```{r}
