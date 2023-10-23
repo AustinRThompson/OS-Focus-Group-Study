@@ -27,7 +27,7 @@ readTranscript <- function(file, transcriptName, commentRows) {
   dplyr::rename(Comment = 1) %>%
   dplyr::filter(Comment != "") %>%
   
-  # Filtering just the comments, exluding the comments
+  # Filtering just the comments, excluding the comments
   dplyr::filter(between(row_number(),commentRows[1],commentRows[2])) %>%
   
   # Creating a transcript column, generating the participant ID's from the columns, and prepping for when a comment was separated into two paragraphs
@@ -339,7 +339,8 @@ Pal <- c("#DD5846",
          "#73A3D3",
          "#709952",
          "#7DA262",
-         "#B58ABA")
+         "#B58ABA",
+         "#CFB2D2")
 
 RQ1_sc_summary %>%
   dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
@@ -474,6 +475,247 @@ ggsave(
   scale = 1
 )
 ```
+## Resources
+```{r}
+RQ2_codes %>%
+  dplyr::filter(Subcategory == "1.9 - Resources") %>%
+  dplyr::group_by(Group, initialCode) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N) %>%
+  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
+                label = case_when(
+                  proportion < 3 ~ NA,
+                  TRUE ~ label
+                )) %>%
+  ggplot() +
+  aes(y = proportion,
+      x = Group,
+      fill = initialCode) +
+  geom_col() +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5),
+            color = "white") +
+  #scale_fill_manual(values = Pal) +
+  theme_void() +
+  facet_wrap(~Group, scales = "free_x") +
+  theme(legend.position = "right")
+```
+# RQ3
+What information related to open science practices do assistant professors in CSD report wanting to learn more about and how would they prefer to learn more about them?
+```{r}
+RQ3_cb <- cb_master %>%
+  dplyr::filter(RQ == "3")
+
+RQ3_codes <- uniqueCodes %>%
+  dplyr::rename(initialCode = code) %>%
+  dplyr::mutate(Group = case_when(
+    Transcript == "R1_1" ~ "R1",
+    Transcript == "R1_2" ~ "R1",
+    Transcript == "nonR1_1" ~ "non-R1",
+    Transcript == "nonR1_2" ~ "non-R1",
+  )) %>%
+  base::merge(., RQ3_cb)
+
+RQ3_ic_summary <- RQ3_codes %>%
+  dplyr::group_by(Subcategory,initialCode) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N)
+
+RQ3_sc_summary <- RQ3_codes %>%
+  dplyr::group_by(Group, Subcategory) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N)
+```
+
+## What
+```{r}
+what <- RQ3_codes %>%
+  dplyr::filter(Subcategory == "3.1 - Information") %>%
+  dplyr::group_by(Group,Subcategory,initialCode) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  dplyr::group_by(Subcategory,initialCode) %>%
+  dplyr::mutate(allN = sum(N)) %>%
+  dplyr::ungroup() %>%
+  arrange(allN) %>%
+  dplyr::filter(initialCode != "LP-P") %>%
+  dplyr::filter(initialCode != "LP-C") %>%
+  dplyr::filter(initialCode != "LP-PPOV") %>%
+  dplyr::mutate(initialCode = factor(initialCode,
+                                     levels = unique(initialCode),
+                                     labels = c(
+                                       "IRB Policies",
+                                       "OS Workflow",
+                                       "Institutional Policies",
+                                       "Self-Archiving",
+                                       "Open Peer Review",
+                                       "Open Access",
+                                       "Preregistration",
+                                       "Open Data",
+                                       "Open Educational Resources",
+                                       "All OS Practices"
+                                     )))
+
+what %>%
+  dplyr::mutate(label = paste0("  ", Group," (",round(proportion,digits = 2),"%)")) %>%
+  ggplot() +
+  aes(y = N,
+      x = initialCode,
+      fill = initialCode,
+      alpha = Group,
+      label = label) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(y = allN),
+            position = position_dodge2(width = 0.9, preserve = "single"),
+            alpha = .4,
+            vjust=0.25,
+            hjust=0) +
+  scale_fill_manual(values = rev(Pal)) +
+  scale_alpha_manual(values = c(.6,1)) +
+  theme_void() +
+  theme(legend.position = "none",
+        axis.text.y = element_text(hjust = 1),
+        text=element_text(family="Arial")) +
+  coord_flip(ylim = c(0,20))
+
+ggsave(
+  plot = last_plot(),
+  filename = "Figures/RQ3_WLP Topics.png",
+  height = 6,
+  width = 8,
+  units = "in",
+  scale = 1
+)
+```
+
+## How
+```{r}
+how <- RQ3_codes %>%
+  dplyr::filter(Subcategory != "3.1 - Information") %>%
+  dplyr::group_by(Group,Subcategory,initialCode) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  dplyr::group_by(Subcategory,initialCode) %>%
+  dplyr::mutate(allN = sum(N)) %>%
+  dplyr::ungroup() %>%
+  arrange(allN) %>%
+  arrange(Subcategory) %>%
+  dplyr::mutate(initialCode = factor(initialCode,
+                                     levels = unique(initialCode)),
+                Group = factor(Group,
+                               levels = c("R1", "non-R1"),
+                               labels = c("R1", "Non-R1")),
+                Subcategory = factor(Subcategory,
+                                     levels = c("3.2 - Independent Learning",
+                                                "3.3 - Learning with Peers"),
+                                     labels = c("Independent Learning",
+                                                "Learning with Peers")))
+
+how %>%
+  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
+                label = case_when(
+                  proportion < 3 ~ NA,
+                  TRUE ~ label
+                )) %>%
+  ggplot() +
+  aes(y = proportion,
+      x = Group,
+      fill = initialCode) +
+  geom_col() +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5),
+            color = "white") +
+  facet_grid(Subcategory~Group, scales = "free_x") +
+  scale_fill_manual(values = Pal) +
+  scale_alpha_manual(values = c(1,1)) +
+  theme_void() +
+  theme(legend.position = "none",
+        strip.text.y.right = element_text(angle = 90),
+        strip.text = element_text(size = 14))
+  
+
+ggsave(
+  plot = last_plot(),
+  filename = "Figures/RQ3_how.png",
+  height = 9,
+  width = 8, 
+  units = "in",
+  scale = .7
+)
+```
+
+# RQ4 
+What potential impacts do assistant professors perceive their engagement in open science practices to have on their careers?
+```{r}
+RQ4_cb <- cb_master %>%
+  dplyr::filter(RQ == "4")
+
+RQ4_codes <- uniqueCodes %>%
+  dplyr::rename(initialCode = code) %>%
+  dplyr::mutate(Group = case_when(
+    Transcript == "R1_1" ~ "R1",
+    Transcript == "R1_2" ~ "R1",
+    Transcript == "nonR1_1" ~ "non-R1",
+    Transcript == "nonR1_2" ~ "non-R1",
+  )) %>%
+  base::merge(., RQ4_cb)
+
+RQ4_ic_summary <- RQ4_codes %>%
+  dplyr::group_by(Subcategory,initialCode) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N)
+
+RQ4_sc_summary <- RQ4_codes %>%
+  dplyr::group_by(Subcategory) %>%
+  dplyr::summarise(N = NROW(initialCode)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N) %>%
+  dplyr::mutate(Subcategory = factor(Subcategory,
+                                     levels = rev(unique(Subcategory))))
+
+Pal <- c("#DD5846",
+         "#EBA240",
+         "#4283C3",
+         "#709952")
+
+RQ4_sc_summary %>%
+  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
+                label = case_when(
+                  proportion < 10 ~ NA,
+                  TRUE ~ label
+                )) %>%
+  ggplot() +
+  aes(y = proportion,
+      x = 1,
+      fill = Subcategory) +
+  geom_col() +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5),
+            color = "white") +
+  scale_fill_manual(values = Pal) +
+  theme_void() +
+  theme(legend.position = "right")
+
+ggsave(
+  plot = last_plot(),
+  filename = "Figures/RQ4.png",
+  height = 6,
+  width = 4.5,
+  units = "in",
+  scale = 1
+)
+```
 
 # Cloud Map
 ```{r}
@@ -586,7 +828,7 @@ dist_usarrests = dist(USArrests)
 # hierarchical clustering analysis
 clus_usarrests = hclust(dist_usarrests, method = "ward.D")
 
-# Retreive data
+# Retrieve data
 class.dat <- classification(c("Pseudomonas putida", "Pseudomonas aeruginosa","Enterobacter xiangfangensis","Salmonella enterica","Klebsiella pneumoniae"), db = 'ncbi')
 
 # Specify interest
@@ -609,7 +851,7 @@ for (i in 1:(ncol(df2)-1)){
   parent.child <- rbind(parent.child,df2[,c(i,i+1)])
 }
 
-# To dataframe and add colnmaes
+# To data frame and add colnames
 parent.child <- as.data.frame(parent.child)
 colnames(parent.child) <- c('from', 'to')
 
