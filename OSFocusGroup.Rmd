@@ -299,10 +299,22 @@ uniqueCodes <- allcodeReferences %>%
     dplyr::summarize(Comment = paste0(Comment, collapse = " // ")) %>%
     dplyr::ungroup()
 
-# Experience
-experience <- uniqueCodes %>%
-  dplyr::filter(stringr::str_detect(code,
-                                    pattern = fixed("PE-")))
+cb_combined <- cb_master %>%
+  dplyr::select(Subcategory:codeName) %>%
+  dplyr::rename(code = initialCode) %>%
+  base::merge(uniqueCodes, .) %>%
+  dplyr::group_by(Subcategory) %>% 
+  dplyr::summarize(Comment = paste0(Comment, collapse = " // "),
+                   N = sum(NROW(code))) %>%
+  dplyr::ungroup() %>%
+  dplyr::relocate(N, .before = Comment)
+
+
+utils::write.csv(
+  x = cb_combined,
+  file = "Data/Prepped Data/AxialCode Count.csv",
+  fileEncoding = "UTF-8")
+
 ```
 
 # RQ1
@@ -762,160 +774,6 @@ utils::write.csv(
   file = "Data/Prepped Data/Master Codebook_examples.csv",
   fileEncoding = "UTF-8")
 ```
-
-# Trying to make a tree
-```{r}
-tree <- cb_master %>%
-  dplyr::select(Subcategory, axialCode, initialCode) %>%
-  dplyr::filter(Subcategory != "") %>%
-  arrange(initialCode) %>%
-  arrange(axialCode) %>%
-  arrange(Subcategory)
-d1 = tree %>%
-  dplyr::select(Subcategory, axialCode) %>%
-  dplyr::rename(from = 1,
-                to = 2)
-d2 = tree %>%
-  dplyr::select(axialCode, initialCode) %>%
-  dplyr::rename(from = 1,
-                to = 2)
-
-hierarchy <- rbind(d1, d2)
-
-vertices <- data.frame(name = unique(c(as.character(hierarchy$from), as.character(hierarchy$to))) ) 
-
-g <- igraph::graph_from_data_frame(hierarchy, vertices=NULL)
-
-library(ggraph) # install.packages('ggraph')
-treePlot <- ggraph(g,
-                   layout='dendrogram',
-                   circular=FALSE) + 
-  geom_edge_link() + 
-  geom_node_label(aes(label=names(V(g))),
-                  size=2,
-                  nudge_y=0) + 
-  scale_y_reverse()  +
-  coord_flip() +
-  theme_classic()
-treePlot
-
-lay = layout.reingold.tilford(g) 
-par(mar=c(0,0,0,0))
-plot(g, layout=-lay[, 2:1],vertex.label.cex=0.7,
-vertex.size=1,edge.arrow.size= 0.4)
-
-ggsave(treePlot,
-       filename = "Figures/TreePlot.png",
-       height = 10,
-       width = 6.5,
-       units = "in",
-       scale = 1)
-```
-```{r}
-library(treemap)
-
-```
-
-
-
-```{r}
-# Load data
-data(USArrests)
-
-# distance matrix 
-dist_usarrests = dist(USArrests)
-
-# hierarchical clustering analysis
-clus_usarrests = hclust(dist_usarrests, method = "ward.D")
-
-# Retrieve data
-class.dat <- classification(c("Pseudomonas putida", "Pseudomonas aeruginosa","Enterobacter xiangfangensis","Salmonella enterica","Klebsiella pneumoniae"), db = 'ncbi')
-
-# Specify interest
-interest <- c('superkingdom', 'phylum','class','order','genus','species')
-
-# Convert to wide matrix
-df2 <- bind_rows(class.dat, .id = "column_label") %>%
-  dplyr::select(-id) %>% 
-  filter(rank %in% interest) %>%
-  spread(rank, name) %>%
-  dplyr::select(-column_label) %>%
-  dplyr::select(interest) %>% # we need the order
-  as.matrix()
-
-# Empty parent child matrix
-parent.child <- matrix(nrow=0,ncol=2)
-
-# Add data to parent child
-for (i in 1:(ncol(df2)-1)){
-  parent.child <- rbind(parent.child,df2[,c(i,i+1)])
-}
-
-# To data frame and add colnames
-parent.child <- as.data.frame(parent.child)
-colnames(parent.child) <- c('from', 'to')
-
-# Convert this to a ggraph
-g <- graph_from_data_frame(parent.child)
-ggraph(g,layout='dendrogram',circular=FALSE) + 
-  geom_edge_link() + 
-  geom_node_label(aes(label=names(V(g))),size=3,nudge_y=-0.1) + 
-  scale_y_reverse(labels = interest)  + coord_flip() +
-  theme_classic()
-```
-
-
-```{r}
-```
-
-
-```{r}
-# Load data
-data(USArrests)
-# Compute distances and hierarchical clustering
-dd <- dist(scale(USArrests), method = "euclidean")
-hc <- hclust(dd, method = "ward.D2")
-    
-treeData <- cb_master %>%
-  dplyr::select(Subcategory, axialCode, initialCode) %>%
-  dplyr::filter(Subcategory != "") %>%
-  arrange(Subcategory)
-
- df <- data.frame(x=c('A','A','B','B','B'), y=c('Ab','Ac','Ba', 'Ba','Bd'), z=c('Abb','Acc','Bad', 'Bae','Bdd'))
- test <- stree(df, level = 1)
-
-#Tree
-x <- maketreelist(treeData)
-
-library(igraph) # install.packages('igraph')
-g <- graph.data.frame(x)
-plot(g)
-
-
-level <- c(1, 2, 3, 4, 4, 3, 4, 4, 1, 2, 3)
-value <- letters[1:11]
-
-library(tidyverse)
-library(data.tree)
-library(networkD3) # install.packages('networkD3')
-
-data.frame(level, value, stringsAsFactors = F) %>%
-  mutate(row = row_number()) %>%
-  mutate(level2 = level, value2 = value) %>%
-  spread(level2, value2) %>%
-  mutate(`0` = "") %>%
-  arrange(row) %>%
-  fill(-level, -value, -row) %>%
-  gather(parent_level, parent, -level, -value, -row) %>%
-  filter(parent_level == level - 1) %>%
-  arrange(row) %>%
-  select(parent, child = value) %>%
-  data.tree::FromDataFrameNetwork() %>%
-  data.tree::ToListExplicit(unname = TRUE) %>%
-  networkD3::radialNetwork()
-```
-
-
 
 # Sample Descriptives
 ## Function
