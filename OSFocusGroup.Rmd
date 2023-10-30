@@ -9,7 +9,6 @@ library(tidyverse) # install.packages('tidyverse')
 library(viridis)  # install.packages('viridis')
 library(wordcloud) # install.packages('wordcloud')
 library(tm) # install.packages('tm')
-library(data.tree) # install.packages('data.tree')
 library(extrafont) # install.packages('extrafont')
 loadfonts(device = "all")
 ```
@@ -416,9 +415,10 @@ RQ2_sc_summary <- RQ2_codes %>%
                                        "Attitudes",
                                        "Study Components",
                                        "Expectations, Policies, & Regulations",
-                                       "Training & Knowledge",
+                                       "Knowledge",
                                        "Working with Others",
                                        "Inequality",
+                                       "Training",
                                        "Personal",
                                        "Past Experience"
                                      ))) %>%
@@ -434,6 +434,7 @@ Pal <- c("#DD5846",
          "#73A3D3",
          "#709952",
          "#7DA262",
+         "#B58ABA",
          "#B58ABA")
 
 RQ2_sc_summary %>%
@@ -592,7 +593,7 @@ what %>%
   scale_fill_manual(values = rev(Pal)) +
   scale_alpha_manual(values = c(.6,1)) +
   theme_void() +
-  theme(legend.position = "none",
+  theme(legend.position = "right",
         axis.text.y = element_text(hjust = 1),
         text=element_text(family="Arial")) +
   coord_flip(ylim = c(0,20))
