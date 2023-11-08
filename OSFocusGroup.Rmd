@@ -405,6 +405,36 @@ RQ2_ic_summary <- RQ2_codes %>%
   dplyr::mutate(proportion = (N / sum(N))*100) %>%
   arrange(N)
 
+# Exporting these frequency counts for analysis
+freqByGroup_initial <- RQ2_codes %>%
+  dplyr::group_by(Group,Subcategory,initialCode) %>%
+  dplyr::summarise(N = NROW(initialCode),
+                   Examples = paste0(Comment, collapse = " // ")) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  arrange(N) %>%
+  base::merge(., cb_master %>%
+                dplyr::select(Subcategory, initialCode, axialCode)) %>%
+  dplyr::relocate(axialCode, .after = Subcategory)
+
+freqByGroup_axial <- freqByGroup_initial %>%
+  dplyr::group_by(Group,Subcategory,axialCode) %>%
+  dplyr::summarise(N = sum(N),
+                   Examples = paste0(Examples, collapse = " // "))
+
+freqByGroup_Subcategory <- freqByGroup_initial %>%
+  dplyr::group_by(Group,Subcategory) %>%
+  dplyr::summarise(N = sum(N),
+                   Examples = paste0(Examples, collapse = " // "))
+
+rio::export(file = "Data/Prepped Data/R1nonR1_initial.csv",
+            freqByGroup_initial)
+rio::export(file = "Data/Prepped Data/R1nonR1_axial.csv",
+            freqByGroup_axial)
+
+rio::export(file = "Data/Prepped Data/R1nonR1_subcategory.csv",
+            freqByGroup_Subcategory)
+
 RQ2_sc_summary <- RQ2_codes %>%
   dplyr::group_by(Group, Subcategory) %>%
   dplyr::summarise(N = NROW(initialCode)) %>%
