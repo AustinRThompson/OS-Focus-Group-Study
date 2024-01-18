@@ -1,0 +1,74 @@
+id,focus_group,job_title,edu,degree_awarded,edu_class,years_emp_current,research_percent,teaching_percent,service_percent,years_emp_total,research_exp,current_inst_class,current_inst_class_2,region,research_area,assistant_pubs,total_pubs,fam_os,use_os,age,gender,ethnicity,middle_eastern_text,asian_text,black_text,hispanic_text,native_american_text,pacific_islander_text,white_text,other_eth_text,race
+33,R1,Assistant Professor,PhD,2021,Other,0.33,70,20,10,0.33,9,R1,,Northeast,Articulation/speech science,3,23,Somewhat Familiar,Rarely,33,Woman,White or European American,,,,,,,,,White
+33,R1,Assistant Professor,PhD,2021,Other,0.33,70,20,10,0.33,9,R1,,Northeast,Neurogenic communication disorders,3,23,Somewhat Familiar,Rarely,33,Woman,White or European American,,,,,,,,,White
+23,R1,Assistant Professor,PhD,2018,R1,1,50,40,10,3,9,R1,,Southeast,Cognitive aspects of communication,4,23,Somewhat Familiar,Often,36,Man,Asian or Asian American,,,,,,,,,Asian
+23,R1,Assistant Professor,PhD,2018,R1,1,50,40,10,3,9,R1,,Southeast,Hearing and/or balance,4,23,Somewhat Familiar,Often,36,Man,Asian or Asian American,,,,,,,,,Asian
+21,R1,Assistant Professor,MD/PhD,2012,R1,2,80,10,10,6,11,R1,,Northeast,Cognitive aspects of communication,16,15,Moderately Familiar,Often,39,Woman,Asian or Asian American,,Chinese,,,,,,,Asian
+21,R1,Assistant Professor,MD/PhD,2012,R1,2,80,10,10,6,11,R1,,Northeast,Language learning and/or language disorders,16,15,Moderately Familiar,Often,39,Woman,Asian or Asian American,,Chinese,,,,,,,Asian
+21,R1,Assistant Professor,MD/PhD,2012,R1,2,80,10,10,6,11,R1,,Northeast,Social aspects of communication,16,15,Moderately Familiar,Often,39,Woman,Asian or Asian American,,Chinese,,,,,,,Asian
+22,R1,Assistant Professor,PhD,2022,R1,0.5,45,50,5,0.5,10,R1,,Southeast,Articulation/speech science,0,2,Somewhat Familiar,Rarely,32,Woman,White or European American,,,,,,,White,,White
+22,R1,Assistant Professor,PhD,2022,R1,0.5,45,50,5,0.5,10,R1,,Southeast,Cultural/linguistic diversity,0,2,Somewhat Familiar,Rarely,32,Woman,White or European American,,,,,,,White,,White
+22,R1,Assistant Professor,PhD,2022,R1,0.5,45,50,5,0.5,10,R1,,Southeast,Language learning and/or language disorders,0,2,Somewhat Familiar,Rarely,32,Woman,White or European American,,,,,,,White,,White
+22,R1,Assistant Professor,PhD,2022,R1,0.5,45,50,5,0.5,10,R1,,Southeast,Speech development and/or speech sound disorders,0,2,Somewhat Familiar,Rarely,32,Woman,White or European American,,,,,,,White,,White
+27,R1,Assistant Professor,PhD,2015,R1,3,46,44,10,3,11,R1,,Southeast,AAC (augmentative and alternative communication),9,13,Slightly Familiar,Never,44,Woman,White or European American,,,,,,,White,,White
+27,R1,Assistant Professor,PhD,2015,R1,3,46,44,10,3,11,R1,,Southeast,Language learning and/or language disorders,9,13,Slightly Familiar,Never,44,Woman,White or European American,,,,,,,White,,White
+27,R1,Assistant Professor,PhD,2015,R1,3,46,44,10,3,11,R1,,Southeast,Social aspects of communication,9,13,Slightly Familiar,Never,44,Woman,White or European American,,,,,,,White,,White
+24,R1,Assistant Professor,PhD,2015,R1,4.5,50,40,10,4.5,12.5,R1,,Northeast,Speech development and/or speech sound disorders,10,22,Somewhat Familiar,Rarely,42,Woman,White or European American,,,,,,,,,White
+20,R1,Assistant Professor,PhD,2013,R1,5.5,70,20,10,5.5,8.5,R1,,Southeast,Cognitive aspects of communication,16,38,Extremely Familiar,Often,38,Woman,White or European American,,,,,,,,,White
+20,R1,Assistant Professor,PhD,2013,R1,5.5,70,20,10,5.5,8.5,R1,,Southeast,Hearing and/or balance,16,38,Extremely Familiar,Often,38,Woman,White or European American,,,,,,,,,White
+20,R1,Assistant Professor,PhD,2013,R1,5.5,70,20,10,5.5,8.5,R1,,Southeast,Speech development and/or speech sound disorders,16,38,Extremely Familiar,Often,38,Woman,White or European American,,,,,,,,,White
+25,R1,Assistant Professor,PhD,2017,Other,5,40,40,20,5,10,R1,,Southwest,Cognitive aspects of communication,10,14,Not Familiar at All,Rarely,45,Woman,Hispanic or Latino,,,,,,,,,Latino or Hispanic
+26,R1,Assistant Professor,PhD,2011,R1,1,40,40,20,8,12,R1,,Midwest,Articulation/speech science,28,36,Moderately Familiar,Often,46,Man,White or European American,,,,,,,,,I prefer not to answer
+26,R1,Assistant Professor,PhD,2011,R1,1,40,40,20,8,12,R1,,Midwest,Speech development and/or speech sound disorders,28,36,Moderately Familiar,Often,46,Man,White or European American,,,,,,,,,I prefer not to answer
+35,R1,Assistant Professor,PhD,2017,R1,4,40,40,20,4,10,R1,,West,Aural rehabilitation,8,22,Slightly Familiar,Rarely,36,Woman,White or European American,,,,,,,,,White
+35,R1,Assistant Professor,PhD,2017,R1,4,40,40,20,4,10,R1,,West,Cognitive aspects of communication,8,22,Slightly Familiar,Rarely,36,Woman,White or European American,,,,,,,,,White
+35,R1,Assistant Professor,PhD,2017,R1,4,40,40,20,4,10,R1,,West,Hearing and/or balance,8,22,Slightly Familiar,Rarely,36,Woman,White or European American,,,,,,,,,White
+28,R1,Assistant Professor,PhD,2016,R1,2,40,40,20,2,13,R1,,Southwest,Neurogenic communication disorders,2,11,Moderately Familiar,Often,35,Woman,White or European American,,,,,,,Italian American,,White
+30,R1,Assistant Professor,PhD,2016,R1,5,60,30,10,5,11,R1,,Midwest,Neurogenic communication disorders,24,28,Extremely Familiar,Often,33,Woman,White or European American,,,,,,,,,White
+31,R1,Assistant Professor,PhD,2016,R1,7,47,38,15,7,13,R1,,Southeast,Neurogenic communication disorders,12,18,Slightly Familiar,Rarely,38,Woman,White or European American,,,,,,,,,White
+32,R1,Assistant Professor,PhD,2017,R1,1,60,20,20,1,6,R1,,Southeast,Neurogenic communication disorders,2,5,Somewhat Familiar,Often,34,Woman,White or European American,,,,,,,,,White
+29,R1,Assistant Professor,PhD,2019,Other,1,40,40,20,4,9,R1,,Midwest,AAC (augmentative and alternative communication),10,13,Moderately Familiar,Often,33,Woman,White or European American,,,,,,,White,,White
+29,R1,Assistant Professor,PhD,2019,Other,1,40,40,20,4,9,R1,,Midwest,Articulation/speech science,10,13,Moderately Familiar,Often,33,Woman,White or European American,,,,,,,White,,White
+29,R1,Assistant Professor,PhD,2019,Other,1,40,40,20,4,9,R1,,Midwest,Neurogenic communication disorders,10,13,Moderately Familiar,Often,33,Woman,White or European American,,,,,,,White,,White
+29,R1,Assistant Professor,PhD,2019,Other,1,40,40,20,4,9,R1,,Midwest,Voice and resonance,10,13,Moderately Familiar,Often,33,Woman,White or European American,,,,,,,White,,White
+34,R1,Assistant Professor,PhD,2011,R1,1,50,35,15,11,16,R1,,Southeast,Cognitive aspects of communication,20,24,Slightly Familiar,Rarely,46,Woman,White or European American,,,,,,,,,White
+34,R1,Assistant Professor,PhD,2011,R1,1,50,35,15,11,16,R1,,Southeast,Neurogenic communication disorders,20,24,Slightly Familiar,Rarely,46,Woman,White or European American,,,,,,,,,White
+4,Non-R1,Assistant Professor,PhD,2016,R1,3,50,40,10,3,11.5,R2,,Southwest,Cognitive aspects of communication,16,30,Slightly Familiar,Often,39,Woman,White or European American,,,,,,,,,White
+4,Non-R1,Assistant Professor,PhD,2016,R1,3,50,40,10,3,11.5,R2,,Southwest,Neurogenic communication disorders,16,30,Slightly Familiar,Often,39,Woman,White or European American,,,,,,,,,White
+8,Non-R1,Assistant Professor,PhD,2022,R1,1,25,55,20,1,4,D/PU,,Northeast,Language learning and/or language disorders,3,8,Somewhat Familiar,Often,33,Man,White or European American,,,,,,,,,White
+2,Non-R1,Assistant Professor,PhD,2016,R1,7,20,60,20,7,13,D/PU,,Northeast,Higher education in CSD,6,8,Moderately Familiar,Often,44,Woman,White or European American,,,,,,,Italian,,White
+2,Non-R1,Assistant Professor,PhD,2016,R1,7,20,60,20,7,13,D/PU,,Northeast,Language learning and/or language disorders,6,8,Moderately Familiar,Often,44,Woman,White or European American,,,,,,,Italian,,White
+3,Non-R1,Assistant Professor,PhD,2021,R1,2,40,50,10,2,7,R2,,Midwest,Cultural/linguistic diversity,4,9,Slightly Familiar,Rarely,33,Woman,White or European American,,,,,,,unspecified,,White
+3,Non-R1,Assistant Professor,PhD,2021,R1,2,40,50,10,2,7,R2,,Midwest,Speech development and/or speech sound disorders,4,9,Slightly Familiar,Rarely,33,Woman,White or European American,,,,,,,unspecified,,White
+6,Non-R1,Assistant Professor,PhD,2021,R2,2,10,80,10,2,7,D/PU,,Southeast,Language learning and/or language disorders,1,1,Somewhat Familiar,Never,32,Woman,White or European American,,,,,,,,,White
+6,Non-R1,Assistant Professor,PhD,2021,R2,2,10,80,10,2,7,D/PU,,Southeast,Social aspects of communication,1,1,Somewhat Familiar,Never,32,Woman,White or European American,,,,,,,,,White
+5,Non-R1,Assistant Professor,PhD,2022,R1,0.5,40,50,10,0.5,5,R2,,West,Language learning and/or language disorders,0,5,Slightly Familiar,Often,37,Woman,White or European American,,,,,,,,,White
+5,Non-R1,Assistant Professor,PhD,2022,R1,0.5,40,50,10,0.5,5,R2,,West,Telepractice in CSD,0,5,Slightly Familiar,Often,37,Woman,White or European American,,,,,,,,,White
+1,Non-R1,Assistant Professor,PhD,2021,R1,1,45,50,5,1,5,D/PU,,Northeast,AAC (augmentative and alternative communication),2,7,Somewhat Familiar,Often,35,Nonbinary,White or European American,,,,,,,white,,White
+1,Non-R1,Assistant Professor,PhD,2021,R1,1,45,50,5,1,5,D/PU,,Northeast,Cultural/linguistic diversity,2,7,Somewhat Familiar,Often,35,Nonbinary,White or European American,,,,,,,white,,White
+1,Non-R1,Assistant Professor,PhD,2021,R1,1,45,50,5,1,5,D/PU,,Northeast,Language learning and/or language disorders,2,7,Somewhat Familiar,Often,35,Nonbinary,White or European American,,,,,,,white,,White
+1,Non-R1,Assistant Professor,PhD,2021,R1,1,45,50,5,1,5,D/PU,,Northeast,Social aspects of communication,2,7,Somewhat Familiar,Often,35,Nonbinary,White or European American,,,,,,,white,,White
+7,Non-R1,Assistant Professor,PhD,2016,D/PU,3,40,40,20,5,12,R2,,Southeast,Language learning and/or language disorders,12,15,Somewhat Familiar,Often,40,Woman,White or European American,,,,,,,,Ashkenazi Jewish,White
+7,Non-R1,Assistant Professor,PhD,2016,D/PU,3,40,40,20,5,12,R2,,Southeast,Social aspects of communication,12,15,Somewhat Familiar,Often,40,Woman,White or European American,,,,,,,,Ashkenazi Jewish,White
+16,Non-R1,Assistant Professor,ABD,,Other,1,25,75,0,1,3,Other,I am at a regional campus associated with an R1,Midwest,Cognitive aspects of communication,0,0,Slightly Familiar,Never,41,Woman,White or European American,,,,,,,,,White
+16,Non-R1,Assistant Professor,ABD,,Other,1,25,75,0,1,3,Other,I am at a regional campus associated with an R1,Midwest,Neurogenic communication disorders,0,0,Slightly Familiar,Never,41,Woman,White or European American,,,,,,,,,White
+12,Non-R1,Assistant Professor,PhD,2020,R1,3,30,60,10,3,11.5,D/PU,,Southeast,Aural rehabilitation,2,9,Moderately Familiar,Rarely,32,Woman,White or European American,,,,,,,,,White
+12,Non-R1,Assistant Professor,PhD,2020,R1,3,30,60,10,3,11.5,D/PU,,Southeast,Cognitive aspects of communication,2,9,Moderately Familiar,Rarely,32,Woman,White or European American,,,,,,,,,White
+12,Non-R1,Assistant Professor,PhD,2020,R1,3,30,60,10,3,11.5,D/PU,,Southeast,Hearing and/or balance,2,9,Moderately Familiar,Rarely,32,Woman,White or European American,,,,,,,,,White
+10,Non-R1,Assistant Professor,PhD,2019,R2,3.75,40,50,10,3.75,10.75,R2,,West,Articulation/speech science,14,23,Slightly Familiar,Often,33,Woman,White or European American,,,,,,,American with mainly traditions of German origin,,White
+10,Non-R1,Assistant Professor,PhD,2019,R2,3.75,40,50,10,3.75,10.75,R2,,West,Voice and resonance,14,23,Slightly Familiar,Often,33,Woman,White or European American,,,,,,,American with mainly traditions of German origin,,White
+11,Non-R1,Assistant Professor,PhD,2015,R1,4,20,40,40,4,13,R2,,West,Neurogenic communication disorders,6,5,Somewhat Familiar,Rarely,41,Woman,White or European American,,,,,,,mix,,White
+9,Non-R1,Assistant Professor,PhD,2021,Other,2,15,65,20,2,5,Other,,Southeast,Cultural/linguistic diversity,0,0,Not Familiar at All,Never,,,Black or African American,,,,,,,,,Black
+9,Non-R1,Assistant Professor,PhD,2021,Other,2,15,65,20,2,5,Other,,Southeast,Language learning and/or language disorders,0,0,Not Familiar at All,Never,,,Black or African American,,,,,,,,,Black
+14,Non-R1,Assistant Professor,PhD,2017,D/PU,2,40,50,10,2,7,D/PU,,Northeast,Hearing and/or balance,2,14,Moderately Familiar,Often,35,Man,Asian or Asian American,,,,,,,,,Asian
+19,Non-R1,Assistant Professor,PhD,2016,Other,2,30,60,10,7,9,Other,Master's College and University,Northeast,Cognitive aspects of communication,4,4,Somewhat Familiar,Never,,Woman,White or European American,,,,,,,Irish and Scottish,,White
+19,Non-R1,Assistant Professor,PhD,2016,Other,2,30,60,10,7,9,Other,Master's College and University,Northeast,Higher education in CSD,4,4,Somewhat Familiar,Never,,Woman,White or European American,,,,,,,Irish and Scottish,,White
+19,Non-R1,Assistant Professor,PhD,2016,Other,2,30,60,10,7,9,Other,Master's College and University,Northeast,Neurogenic communication disorders,4,4,Somewhat Familiar,Never,,Woman,White or European American,,,,,,,Irish and Scottish,,White
+19,Non-R1,Assistant Professor,PhD,2016,Other,2,30,60,10,7,9,Other,Master's College and University,Northeast,Social aspects of communication,4,4,Somewhat Familiar,Never,,Woman,White or European American,,,,,,,Irish and Scottish,,White
+15,Non-R1,Assistant Professor,PhD,2020,R2,3,25,75,25,3,7,Other,M2,Midwest,Higher education in CSD,2,5,Somewhat Familiar,Rarely,50,Woman,White or European American,,,,,,,Irish American,,White
+15,Non-R1,Assistant Professor,PhD,2020,R2,3,25,75,25,3,7,Other,M2,Midwest,Language learning and/or language disorders,2,5,Somewhat Familiar,Rarely,50,Woman,White or European American,,,,,,,Irish American,,White
+15,Non-R1,Assistant Professor,PhD,2020,R2,3,25,75,25,3,7,Other,M2,Midwest,Social aspects of communication,2,5,Somewhat Familiar,Rarely,50,Woman,White or European American,,,,,,,Irish American,,White
+13,Non-R1,Assistant Professor,PhD,2018,R1,5,50,40,10,5,14,R2,,Northeast,Cultural/linguistic diversity,6,9,Moderately Familiar,Often,33,Woman,"Some other race, ethnicity, or origin (please specify below)",,,,,,,,Jewish,White
+13,Non-R1,Assistant Professor,PhD,2018,R1,5,50,40,10,5,14,R2,,Northeast,Language learning and/or language disorders,6,9,Moderately Familiar,Often,33,Woman,"Some other race, ethnicity, or origin (please specify below)",,,,,,,,Jewish,White
+17,Non-R1,Assistant Professor,EdD,2022,Other,1,15,50,35,1,4,Other,M1,Midwest,Higher education in CSD,0,0,Slightly Familiar,Never,30,Woman,White or European American,,,,,,,,,White
+18,Non-R1,Assistant Professor,PhD,2019,R1,4,30,50,20,4,6,R2,,Southwest,AAC (augmentative and alternative communication),1,2,Not Familiar at All,Never,60,,White or European American,,,,,,,,,White
