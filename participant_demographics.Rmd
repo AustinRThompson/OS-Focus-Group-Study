@@ -1,0 +1,393 @@
+---
+title: "Participant Demographics"
+author: "Micah E. Hirsch, M.S."
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Purpose
+
+The purpose of this document is to create a cleaned and deidentified version of the participant demographic dataset and to compile the participant demographic information for the study "A Qualitative Exploration of Open Science Practices in Communication Sciences and Disorders" conducted by Pfeiffer et al. You can find more information posted on the study's project page on Open Science Framework (OSF). 
+
+Link to OSF Project Page: https://osf.io/tprzu/
+
+```{r, warning = F, message = F}
+
+library(tidyverse) # install.packages("tidyverse")
+library(rio) # install.packages("rio")
+library(gtsummary) # install.packages("gtsummary")
+library(gt) # install.packages("gt")
+library(remotes) # install.packages("remotes")
+library(LaCroixColoR) # remotes::install_github("johannesbjork/LaCroixColoR")
+library(ggalluvial) # install.packages("ggalluvial")
+
+# Loading the datasets
+
+demo_r1 <- rio::import("Data/Raw Data/Participant Demographics/participant_demo.xlsx", which = "R1")
+
+demo_n_r1 <- rio::import("Data/Raw Data/Participant Demographics/participant_demo.xlsx", which = "NON-R1")
+
+# Creating shorter variable names
+
+header_names <- c("part_consent", "data_consent", "name", "id", "job_title", "job_title_2", "edu", "edu_2",
+                  "degree_awarded", "edu_class","years_emp_current", "research_percent", "teaching_percent",
+                  "service_percent", "years_emp_total", "research_exp", "current_inst_class",
+                  "current_inst_class_2", "region", "research_area", "assistant_pubs", "total_pubs", "fam_os",
+                  "use_os", "age", "gender", "ethnicity", "middle_eastern_text", "asian_text", "black_text",
+                  "hispanic_text", "native_american_text", "pacific_islander_text", "white_text", "other_eth_text", "race", "race_text")
+
+names(demo_r1) <- header_names
+
+names(demo_n_r1) <- header_names
+
+# Combining R1 and Non-R1 dfs
+
+demo_full <- rbind(demo_r1, demo_n_r1)
+
+# Several of the variables have different types of responses. This next section of code will clean up the responses to be in a consistent format
+
+demo_full <- demo_full |>
+  # Removing unneeded variables
+  dplyr::select(-c(part_consent, data_consent, name, race_text)) |>
+  # Removing a participant who signed up, but did not attend
+  dplyr::filter(!is.na(id))|>
+  # Recoding job title response for participant 26 and condensing edu variable
+  dplyr::mutate(job_title = recode(job_title, "Other (please specify below)" = "Assistant Professor"),
+                edu_2 = trimws(edu_2, "both"),
+                edu = case_when(edu_2 == "MD/PhD" ~ "MD/PhD",
+                                edu_2 == "M.A., currently ABD for a PhD" ~ "ABD",
+                                TRUE ~ edu),
+                edu = as.factor(edu)) |>
+  # Cleaning Rest of the Variables
+  dplyr::mutate(degree_awarded = case_when(degree_awarded == "M.A." ~ NA,
+                                           degree_awarded == "PhD" ~ NA,
+                                           TRUE ~ degree_awarded),
+                degree_awarded = as.numeric(degree_awarded),
+                edu_class = str_extract(edu_class, "^[^\\(]+"),
+                edu_class = trimws(edu_class, "both"),
+                edu_class = as.factor(edu_class),
+                current_inst_class = str_extract(current_inst_class, "^[^\\(]+"),
+                current_inst_class = trimws(current_inst_class, "both"),
+                years_emp_current = trimws(years_emp_current, "both"),
+                years_emp_current = case_when(years_emp_current == "4 months" ~ .33,
+                                              years_emp_current == "2 years" ~ 2,
+                                              years_emp_current == "0.5 yrs" ~ .5,
+                                              years_emp_current == 
+                                                "this university- I'm in year 1. I have been at 3 universities since 2012" ~ 1,
+                                              years_emp_current == "This is my third year, but I started ABD as an instructor, so this is my second year as an assistant professor technically." ~ 2,
+                                              years_emp_current == "0.5 (since August 2022)" ~ .5,
+                                              years_emp_current == "&lt;1" ~ 1,
+                                              years_emp_current == "3 yrs, 9 mo" ~ 3.75,
+                                              TRUE ~ as.numeric(years_emp_current)),
+                research_percent = gsub("%", " ", research_percent),
+                research_percent = trimws(research_percent, "both"),
+                research_percent = case_when(research_percent == "40  of 9-mo" ~ 40,
+                                             research_percent == "it varies by semester; on average 50" ~ 50,
+                                             research_percent == "20-30"~ 25,
+                                             research_percent == "Probably less than 10" ~ 10,
+                                             research_percent == "40  of 9 mo contract" ~ 40,
+                                             research_percent == "&lt;25" ~ 25,
+                                             TRUE ~ as.numeric(research_percent)),
+                teaching_percent = gsub("%", " ", teaching_percent),
+                teaching_percent = trimws(teaching_percent, "both"),
+                teaching_percent = case_when(teaching_percent == "40  of 9-mo" ~ 40,
+                                             teaching_percent == "it varies; 35  ish" ~ 35,
+                                             teaching_percent == "50-60" ~ 55,
+                                             teaching_percent == "50  of 9 mo" ~ 50,
+                                             TRUE ~ as.numeric(teaching_percent)),
+                service_percent = gsub("%", " ", service_percent),
+                service_percent = trimws(service_percent, "both"),
+                service_percent = case_when(service_percent == "20  of 9-mo" ~ 20,
+                                            service_percent == "10  of 9 mo (5  service, 5  advising)" ~ 10,
+                                            service_percent == "&lt;25" ~ 25,
+                                            TRUE ~ as.numeric(service_percent)),
+                years_emp_total = trimws(years_emp_total, "both"),
+                years_emp_total = case_when(years_emp_total == "4 months" ~ .33,
+                                            years_emp_total == "almost 6 years" ~ 6,
+                                            years_emp_total == "0.5 years" ~ .5,
+                                            years_emp_total == 
+                                              "since 2012. I was tenured and an associate professor 1 year before arriving at my current university (came here and went back down to assistnant as I went from an R2 to an R1)" ~ 2023 - 2012,
+                                            years_emp_total == "&lt;1" ~ 1,
+                                            years_emp_total == "3 yrs, 9 mo" ~ 3.75,
+                                            TRUE ~ as.numeric(years_emp_total)),
+                research_exp = trimws(research_exp, "both"),
+                research_exp = case_when(research_exp == "2 years undergrad RA + 2 yrs MS RA + 5.5 yrs PhD +0.5 assistant professor = 10 yrs" ~ 10,
+                                         research_exp == "16 years" ~ 16,
+                                         research_exp == "4 years of PhD + 3 years assistant professor- 1 year of overlap= 7." ~ 7,
+                                         research_exp == "2 yrs GRA, 1 yr CFY with a small research component, 4 yrs PhD student, 3.75 yrs assistant prof" ~ 2+1+4+3.75,
+                                         research_exp == "7 years" ~ 7,
+                                         TRUE ~ as.numeric(research_exp)),
+                assistant_pubs = case_when(assistant_pubs == "0 (2 submitted)" ~ 0,
+                                           assistant_pubs == "20 ish" ~ 20,
+                                           TRUE ~ as.numeric(assistant_pubs)),
+                total_pubs = ifelse(total_pubs == "I was tenured for one year before moving- so 24ish ?", 24, as.numeric(total_pubs)),
+                fam_os = case_when(fam_os == "I am not at all familiar with open science practices." ~ 1,
+                                   fam_os == "I am slightly familiar with open science practices." ~ 2,
+                                   fam_os == "I am somewhat familiar with open science practices." ~ 3,
+                                   fam_os == "I am moderately familiar with open science practices." ~ 4,
+                                   TRUE ~ 5),
+                fam_os = factor(fam_os, levels = c(1, 2, 3, 4, 5),
+                                labels = c("Not Familiar at All", "Slightly Familiar", "Somewhat Familiar",
+                                           "Moderately Familiar", "Extremely Familiar")),
+                use_os = case_when(use_os == "I do not use open science practices." ~1,
+                                   use_os == "I rarely use open science practices." ~ 2,
+                                   use_os == "I sometimes use open science practices." ~3,
+                                   TRUE ~ 4),
+                use_os = factor(use_os, levels = c(1, 2, 3, 4), 
+                                labels = c("Never", "Rarely", "Sometimes", "Often")),
+                age = as.numeric(age),
+                gender = str_to_sentence(gender),
+                gender = case_when(gender == "Female" ~ "Woman",
+                                   gender == "F" ~ "Woman",
+                                   gender == "Cisgender woman" ~ "Woman",
+                                   gender == "Cis female" ~ "Woman",
+                                   gender == "Male" ~ "Man",
+                                   gender == "Cis-male" ~ "Man",
+                                   TRUE ~ gender),
+                gender = as.factor(gender),
+                ethnicity = str_split_fixed(ethnicity, "-", n=2)[,1]) |>
+  # Recoding participant 25"s response to current institution
+  # They were initially unsure how to classify their current institution, but investigator determined they are R1
+  dplyr::mutate(current_inst_class = case_when(id == 25 ~ "R1",
+                                               TRUE ~ current_inst_class),
+                current_inst_class = as.factor(current_inst_class)) |>
+  # Separating the different responses for research area (some participants indicated multiple areas) 
+  dplyr::mutate(research_area = gsub("Higher education, administration, and/or supervision in CSD", 
+                                     "Higher education in CSD", research_area)) |>
+  tidyr::separate_longer_delim(research_area, ",") |>
+  dplyr::mutate(research_area = trimws(research_area, "both"))
+
+# removing unneeded items from the environment
+rm(header_names, demo_n_r1, demo_r1)
+
+# Creating new variable called focus group (indicates whether participant attended R1 or Non-R1 meetings)
+demo_full <- demo_full |>
+  dplyr::mutate(focus_group = ifelse(current_inst_class == "R1", "R1", "Non-R1"), .after = id) |>
+  dplyr::mutate(focus_group = as.factor(focus_group),
+                region = as.factor(region),
+                research_area = as.factor(research_area),
+                ethnicity = as.factor(ethnicity),
+                race = as.factor(race),
+                job_title = as.factor(job_title))
+
+demo_full <- demo_full |>
+  # removing unneeded variables (these have been recoded in the df)
+  dplyr::select(-c(job_title_2, edu_2))
+
+# Exporting a cleaned version of the participant demographics df
+rio::export(demo_full, "Data/Prepped Data/demo_cleaned.csv")
+
+```
+
+
+# Demographics
+
+
+```{r, warning = F, message = F}
+
+demo_table <- demo_full |>
+  dplyr::select(focus_group, age, gender, race, edu, years_emp_total, research_exp, region, research_percent, teaching_percent, service_percent,
+                assistant_pubs, total_pubs, fam_os, use_os) |>
+  dplyr::distinct() |>
+  tbl_summary(
+    by = focus_group,
+    type = list(service_percent ~ "continuous"),
+    statistic =  list(
+        all_continuous() ~ "{mean} ({sd})",
+        all_categorical() ~ "{n} ({p})%"),
+    label = list(age ~ "Age",
+                 gender ~ "Gender",
+                 race ~ "Race",
+                 edu ~ "Highest Education Level",
+                 years_emp_total ~ "Total Years Employed",
+                 research_exp ~ "Total Years of Research Experience",
+                 region ~ "Region",
+                 research_percent ~ "% Research Workload",
+                 teaching_percent ~ "% Teaching Workload",
+                 service_percent ~ "% Service Workload",
+                 assistant_pubs ~ "# of Publications as Assistant Professor",
+                 total_pubs ~ "Total # of Publications",
+                 fam_os ~ "Familiarity with Open Science Practices",
+                 use_os ~ "Use of Open Science Practices"),
+    missing = "no",
+    digits = list(everything() ~ c(2))) |>
+  as_gt()
+
+demo_table
+
+demo_table |>
+  gt::gtsave("Tables/demo_table.html")
+
+```
+
+
+```{r, warning = F, message = F}
+
+R1 <- demo_full |>
+  dplyr::select(id, focus_group, research_area) |>
+  dplyr::filter(focus_group == "R1") |>
+  dplyr::select(-focus_group) |>
+  dplyr::mutate(area = T) |>
+  tidyr::complete(id, research_area, fill = list(area = F)) |>
+  select(-id) |>
+  tbl_summary(
+        by = area,
+        percent = "row",
+        label = list(research_area ~ "Area(s) of Study")) |>
+  modify_header(stat_2 ~ "**R1**") %>%
+  modify_column_hide(stat_1)
+
+
+Non_R1 <- demo_full |>
+  dplyr::select(id, focus_group, research_area) |>
+  dplyr::filter(focus_group == "Non-R1") |>
+  dplyr::select(-focus_group) |>
+  dplyr::mutate(area = T) |>
+  tidyr::complete(id, research_area, fill = list(area = F)) |>
+  select(-id) |>
+  tbl_summary(
+        by = area,
+        percent = "row",
+        label = list(research_area ~ "Area(s) of Study")) |>
+  modify_header(stat_2 ~ "**Non-R1**") %>%
+  modify_column_hide(stat_1)
+
+research_area_table <- tbl_merge(list(Non_R1, R1)) |>
+  modify_spanning_header(everything() ~ NA_character_) |>
+  as_gt()
+
+research_area_table
+
+research_area_table |>
+  gt::gtsave("Tables/research_area_table.html")
+
+
+```
+
+```{r, echo = F, message = F, warning = F}
+
+rm(demo_table, Non_R1, R1, research_area_table)
+
+```
+
+
+# Figures
+
+## Alluvial Plot
+
+```{r, warning = F, message = F}
+
+# Color Palette
+my_pal <- lacroix_palette("Mango", type = "discrete")
+
+demo_full |>
+  dplyr::select(-research_area) |>
+  dplyr::distinct() |>
+  dplyr::group_by(focus_group, region, fam_os, use_os) |>
+  dplyr::summarize(n = n()) |>
+  ggplot() +
+  aes(y = n,
+      axis1 = focus_group,
+      axis2 = fam_os,
+      axis3 = use_os) +
+  geom_alluvium(aes(fill = focus_group), width = 1/12) +
+  geom_stratum(width = 1/12, alpha = .5) +
+  geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
+  scale_x_discrete(limits = c("focus_group", "fam_os", "use_os"), 
+                   labels = c("Institution Classification", "Familiarity with Open Science", "Use of Open Science"),
+                   expand = c(.05, .05)) +
+  scale_fill_manual(values = my_pal) +
+  labs(y = "Count",
+       fill = "Institution \nClassification") +
+  theme_classic()
+
+ggsave("Figures/alluvial_plot.png", plot = last_plot())
+    
+
+```
+
+## Research Area Count
+
+```{r, warning = F, message = F}
+
+demo_full |>
+  dplyr::select(id, focus_group, research_area) |>
+  dplyr::group_by(focus_group, research_area) |>
+  dplyr::summarize(n = n()) |>
+  ggplot() +
+  aes(x = research_area,
+      y = n,
+      color = focus_group,
+      fill = focus_group) +
+  geom_bar(stat = "identity", position=position_dodge(), alpha = .5) +
+  coord_flip() +
+  labs(x = "Research Area",
+       y = "Count",
+       color = "Institution \nClassification",
+       fill = "Institution \nClassification") +
+  scale_color_manual(values = my_pal) +
+  scale_fill_manual(values = my_pal) +
+  scale_y_continuous(breaks = seq( 0 ,12, by = 2)) +
+  theme_classic()
+
+ggsave("Figures/research_areas.png", plot = last_plot())
+    
+
+```
+
+
+```{r, echo = F, warning = F, message = F}
+
+# Creating a Data Dictionary
+
+library(datadictionary)
+
+labels <- c(id = "Participant ID",
+            focus_group = "Focus Group Assignment",
+            job_title = "Job Title",
+            edu = "Highest Education Level",
+            degree_awarded = "Year Highest Degree was Awarded",
+            edu_class = "Carnegie Classification of Training Institution",
+            years_emp_current = "Years Employed in Current Position",
+            research_percent = "Percent Workload Dedicated to Research",
+            teaching_percent = "Percent Workload Dedicated to Teaching",
+            service_percent = "Percent Workload Dedicated to Service",
+            years_emp_total = "Total Years Employed as an Assistant Professor",
+            research_exp = "Total Years of Research Experience",
+            current_inst_class = "Carnegie Classification of Current Institution",
+            current_inst_class_2 = "Current Institution Classification (write-in option)",
+            region = "Regional Location of Current Institution",
+            research_area = "Participant Research Area(s)",
+            assistant_pubs = "Number of Publications as an Assistant Professor",
+            total_pubs = "Total Number of Publications",
+            fam_os = "Familiarity with Open Science Practices",
+            use_os = "Use of Open Science Practices",
+            age = "Age",
+            gender = "Gender",
+            ethnicity = "Ethnicity",
+            middle_eastern_text = "Middle Eastern (write in option to specify)",
+            asian_text = "Asian (write in option to specify)",
+            black_text = "Black (write in option to specify)",
+            hispanic_text = "Hispanic (write in option to specify)",
+            native_american_text = "Native American (write in option to specify)",
+            pacific_islander_text = "Pacific Islander (write in option to specify)",
+            white_text = "white (write in option to specify",
+            other_eth_text = "Other ethnicity (write in option to specify)",
+            race = "Race")
+
+data_dict <- create_dictionary(demo_full, var_labels = labels)
+
+rio::export(data_dict, "Data/Prepped Data/demo_cleaned_dictionary.csv")
+
+
+```
+

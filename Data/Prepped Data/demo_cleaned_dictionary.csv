@@ -1,0 +1,135 @@
+item,label,class,summary,value
+"","","",Rows in dataset,73
+"","","",Columns in dataset,32
+id,Participant ID,character,unique responses,35
+"","","",missing,0
+focus_group,Focus Group Assignment,factor,Non-R1 (1),39
+"","","",R1 (2),34
+"","","",missing,0
+job_title,Job Title,factor,Assistant Professor (1),73
+"","","",missing,0
+edu,Highest Education Level,factor,ABD (1),2
+"","","",EdD (2),1
+"","","",MD/PhD (3),3
+"","","",PhD (4),67
+"","","",missing,0
+degree_awarded,Year Highest Degree was Awarded,numeric,mean,2018
+"","","",median,2018
+"","","",min,2011
+"","","",max,2022
+"","","",missing,2
+edu_class,Carnegie Classification of Training Institution,factor,D/PU (1),3
+"","","",Other (2),16
+"","","",R1 (3),47
+"","","",R2 (4),7
+"","","",missing,0
+years_emp_current,Years Employed in Current Position,numeric,mean,2
+"","","",median,2
+"","","",min,0.33
+"","","",max,7
+"","","",missing,0
+research_percent,Percent Workload Dedicated to Research,numeric,mean,41
+"","","",median,40
+"","","",min,10
+"","","",max,80
+"","","",missing,0
+teaching_percent,Percent Workload Dedicated to Teaching,numeric,mean,46
+"","","",median,44
+"","","",min,10
+"","","",max,80
+"","","",missing,0
+service_percent,Percent Workload Dedicated to Service,numeric,mean,13
+"","","",median,10
+"","","",min,0
+"","","",max,40
+"","","",missing,0
+years_emp_total,Total Years Employed as an Assistant Professor,numeric,mean,4
+"","","",median,3
+"","","",min,0.33
+"","","",max,11
+"","","",missing,0
+research_exp,Total Years of Research Experience,numeric,mean,9
+"","","",median,9
+"","","",min,3
+"","","",max,16
+"","","",missing,0
+current_inst_class,Carnegie Classification of Current Institution,factor,D/PU (1),13
+"","","",Other (2),12
+"","","",R1 (3),34
+"","","",R2 (4),14
+"","","",missing,0
+current_inst_class_2,Current Institution Classification (write-in option),character,unique responses,5
+"","","",missing,63
+region,Regional Location of Current Institution,factor,Midwest (1),15
+"","","",Northeast (2),20
+"","","",Southeast (3),25
+"","","",Southwest (4),5
+"","","",West (5),8
+"","","",missing,0
+research_area,Participant Research Area(s),factor,AAC (augmentative and alternative communication) (1),4
+"","","",Articulation/speech science (2),5
+"","","",Aural rehabilitation (3),2
+"","","",Cognitive aspects of communication (4),10
+"","","",Cultural/linguistic diversity (5),5
+"","","",Hearing and/or balance (6),5
+"","","",Higher education in CSD (7),4
+"","","",Language learning and/or language disorders (8),12
+"","","",Neurogenic communication disorders (9),11
+"","","",Social aspects of communication (10),7
+"","","",Speech development and/or speech sound disorders (11),5
+"","","",Telepractice in CSD (12),1
+"","","",Voice and resonance (13),2
+"","","",missing,0
+assistant_pubs,Number of Publications as an Assistant Professor,numeric,mean,7
+"","","",median,4
+"","","",min,0
+"","","",max,28
+"","","",missing,0
+total_pubs,Total Number of Publications,numeric,mean,13
+"","","",median,9
+"","","",min,0
+"","","",max,38
+"","","",missing,0
+fam_os,Familiarity with Open Science Practices,factor,Not Familiar at All (1),4
+"","","",Slightly Familiar (2),20
+"","","",Somewhat Familiar (3),27
+"","","",Moderately Familiar (4),18
+"","","",Extremely Familiar (5),4
+"","","",missing,0
+use_os,Use of Open Science Practices,factor,Never (1),15
+"","","",Rarely (2),23
+"","","",Sometimes (3),0
+"","","",Often (4),35
+"","","",missing,0
+age,Age,numeric,mean,38
+"","","",median,36
+"","","",min,30
+"","","",max,60
+"","","",missing,6
+gender,Gender,factor,Man (1),6
+"","","",Nonbinary (2),4
+"","","",Woman (3),60
+"","","",missing,3
+ethnicity,Ethnicity,factor,Asian or Asian American (1),6
+"","","",Black or African American (2),2
+"","","",Hispanic or Latino (3),1
+"","","","Some other race, ethnicity, or origin (please specify below) (4)",2
+"","","",White or European American (5),62
+"","","",missing,0
+middle_eastern_text,Middle Eastern (write in option to specify),logical,missing,73
+asian_text,Asian (write in option to specify),character,unique responses,2
+"","","",missing,70
+black_text,Black (write in option to specify),logical,missing,73
+hispanic_text,Hispanic (write in option to specify),logical,missing,73
+native_american_text,Native American (write in option to specify),logical,missing,73
+pacific_islander_text,Pacific Islander (write in option to specify),logical,missing,73
+white_text,white (write in option to specify,character,unique responses,10
+"","","",missing,43
+other_eth_text,Other ethnicity (write in option to specify),character,unique responses,3
+"","","",missing,69
+race,Race,factor,Asian (1),6
+"","","",Black (2),2
+"","","",I prefer not to answer (3),2
+"","","",Latino or Hispanic (4),1
+"","","",White (5),62
+"","","",missing,0
