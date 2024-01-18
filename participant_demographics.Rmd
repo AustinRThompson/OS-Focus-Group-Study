@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Purpose
 
-The purpose of this document is to create a cleaned and deidentified version of the participant demographic dataset and to compile the participant demographic information for the study "A Qualitative Exploration of Open Science Practices in Communication Sciences and Disorders" conducted by Pfeiffer et al. You can find more information posted on the study's project page on Open Science Framework (OSF). 
+The purpose of this document is to create a cleaned and deidentified version of the participant demographic dataset, generate a data dictionary to accompany the cleaned demographic dataset, and to compile the participant demographic information for the study "A Qualitative Exploration of Open Science Practices in Communication Sciences and Disorders" conducted by Pfeiffer et al. You can find more information posted on the study's project page on Open Science Framework (OSF). 
 
 Link to OSF Project Page: https://osf.io/tprzu/
 
