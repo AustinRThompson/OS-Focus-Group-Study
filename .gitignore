@@ -51,3 +51,7 @@ rsconnect/
 # DS_Store
 .DS_Store
 **/.DS_Store
+
+# Raw participant demo
+
+Data/Raw Data/Participant Demographics/
