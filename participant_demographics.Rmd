@@ -29,6 +29,7 @@ library(gt) # install.packages("gt")
 library(remotes) # install.packages("remotes")
 library(LaCroixColoR) # remotes::install_github("johannesbjork/LaCroixColoR")
 library(ggalluvial) # install.packages("ggalluvial")
+library(ggpubr) # install.packages("ggpubr")
 
 # Loading the datasets
 
@@ -152,8 +153,9 @@ demo_full <- demo_full |>
                                    gender == "Cis female" ~ "Woman",
                                    gender == "Male" ~ "Man",
                                    gender == "Cis-male" ~ "Man",
+                                   is.na(gender) ~ "Prefer not to say",
                                    TRUE ~ gender),
-                gender = as.factor(gender),
+                gender = factor(gender, levels = c("Man", "Woman", "Nonbinary", "Prefer not to say")),
                 ethnicity = str_split_fixed(ethnicity, "-", n=2)[,1]) |>
   # Recoding participant 25"s response to current institution
   # They were initially unsure how to classify their current institution, but investigator determined they are R1
@@ -172,12 +174,16 @@ rm(header_names, demo_n_r1, demo_r1)
 # Creating new variable called focus group (indicates whether participant attended R1 or Non-R1 meetings)
 demo_full <- demo_full |>
   dplyr::mutate(focus_group = ifelse(current_inst_class == "R1", "R1", "Non-R1"), .after = id) |>
-  dplyr::mutate(focus_group = as.factor(focus_group),
+  # Editing a few more variables in the df
+  dplyr::mutate(focus_group = factor(focus_group, levels = c("R1", "Non-R1")),
                 region = as.factor(region),
                 research_area = as.factor(research_area),
                 ethnicity = as.factor(ethnicity),
-                race = as.factor(race),
-                job_title = as.factor(job_title))
+                race = ifelse(race == "I prefer not to answer", "Prefer not to answer", race),
+                race = factor(race, levels = c("White", "Black", "Asian", "Latino or Hispanic", "Prefer not to answer")),
+                job_title = as.factor(job_title),
+                id = case_when(focus_group == "R1" ~ paste("R1", id, sep = "-"),
+                                 TRUE ~ paste("nR1", id, sep = "-")))
 
 demo_full <- demo_full |>
   # removing unneeded variables (these have been recoded in the df)
@@ -191,13 +197,18 @@ rio::export(demo_full, "Data/Prepped Data/demo_cleaned.csv")
 
 # Demographics
 
+## Main Demographic Table
+
+This is the main demographic table for the Open Science Focus group study.
 
 ```{r, warning = F, message = F}
 
 demo_table <- demo_full |>
-  dplyr::select(focus_group, age, gender, race, edu, years_emp_total, research_exp, region, research_percent, teaching_percent, service_percent,
-                assistant_pubs, total_pubs, fam_os, use_os) |>
+  dplyr::select(id, focus_group, age, gender, race, years_emp_total, research_exp, 
+                region, research_percent, teaching_percent, service_percent,
+                assistant_pubs, total_pubs) |>
   dplyr::distinct() |>
+  dplyr::select(-id) |>
   tbl_summary(
     by = focus_group,
     type = list(service_percent ~ "continuous"),
@@ -207,17 +218,14 @@ demo_table <- demo_full |>
     label = list(age ~ "Age",
                  gender ~ "Gender",
                  race ~ "Race",
-                 edu ~ "Highest Education Level",
-                 years_emp_total ~ "Total Years Employed",
+                 years_emp_total ~ "Total Years Employed as Assistant Professor",
                  research_exp ~ "Total Years of Research Experience",
                  region ~ "Region",
                  research_percent ~ "% Research Workload",
                  teaching_percent ~ "% Teaching Workload",
                  service_percent ~ "% Service Workload",
                  assistant_pubs ~ "# of Publications as Assistant Professor",
-                 total_pubs ~ "Total # of Publications",
-                 fam_os ~ "Familiarity with Open Science Practices",
-                 use_os ~ "Use of Open Science Practices"),
+                 total_pubs ~ "Total # of Publications"),
     missing = "no",
     digits = list(everything() ~ c(2))) |>
   as_gt()
@@ -229,6 +237,12 @@ demo_table |>
 
 ```
 
+
+## Additional Demographic Information
+
+These are supplemental tables providing additional information about our participants.
+
+### Research Areas
 
 ```{r, warning = F, message = F}
 
@@ -243,7 +257,7 @@ R1 <- demo_full |>
         by = area,
         percent = "row",
         label = list(research_area ~ "Area(s) of Study")) |>
-  modify_header(stat_2 ~ "**R1**") %>%
+  modify_header(stat_2 ~ "**R1**") |>
   modify_column_hide(stat_1)
 
 
@@ -258,24 +272,44 @@ Non_R1 <- demo_full |>
         by = area,
         percent = "row",
         label = list(research_area ~ "Area(s) of Study")) |>
-  modify_header(stat_2 ~ "**Non-R1**") %>%
+  modify_header(stat_2 ~ "**Non-R1**") |>
   modify_column_hide(stat_1)
 
-research_area_table <- tbl_merge(list(Non_R1, R1)) |>
+research_area_table <- tbl_merge(list(R1, Non_R1)) |>
   modify_spanning_header(everything() ~ NA_character_) |>
   as_gt()
 
 research_area_table
 
-research_area_table |>
-  gt::gtsave("Tables/research_area_table.html")
-
 
 ```
 
+
+### Education Level (Type of Doctorate Earned), Familiarity of Open Science, and Use of Open Science
+
+```{r}
+
+demo_2 <- demo_full |>
+  dplyr::select(id, focus_group, edu, fam_os, use_os) |>
+  dplyr::distinct() 
+
+demo_2|>
+  dplyr::select(-id) |>
+  tbl_summary(
+    by = focus_group,
+    statistic =  list(all_categorical() ~ "{n} ({p}%)"),
+    label = list(edu ~ "Highest Level of Education",
+                 fam_os ~ "Familiarity of Open Science Practices",
+                 use_os ~ "Use of Open Science Practices")) |>
+  as_gt()
+
+```
+
+
+
 ```{r, echo = F, message = F, warning = F}
 
-rm(demo_table, Non_R1, R1, research_area_table)
+rm(demo_2, demo_table, Non_R1, R1, research_area_table)
 
 ```
 
@@ -307,19 +341,16 @@ demo_full |>
                    expand = c(.05, .05)) +
   scale_fill_manual(values = my_pal) +
   labs(y = "Count",
-       fill = "Institution \nClassification") +
+       fill = "Group") +
   theme_classic()
-
-ggsave("Figures/alluvial_plot.png", plot = last_plot())
-    
 
 ```
 
-## Research Area Count
+
+## Research Area Plot
 
 ```{r, warning = F, message = F}
-
-demo_full |>
+research_plot <- demo_full |>
   dplyr::select(id, focus_group, research_area) |>
   dplyr::group_by(focus_group, research_area) |>
   dplyr::summarize(n = n()) |>
@@ -329,20 +360,106 @@ demo_full |>
       color = focus_group,
       fill = focus_group) +
   geom_bar(stat = "identity", position=position_dodge(), alpha = .5) +
-  coord_flip() +
-  labs(x = "Research Area",
+  labs(title = "Research Areas",
+       x = "",
        y = "Count",
-       color = "Institution \nClassification",
-       fill = "Institution \nClassification") +
+       caption = "Note: Participants were able to select multiple research areas. None of the R1 participants \nhad research areas in higher education or telepractice in CSD.",
+       color = "Group",
+       fill = "Group") +
   scale_color_manual(values = my_pal) +
   scale_fill_manual(values = my_pal) +
   scale_y_continuous(breaks = seq( 0 ,12, by = 2)) +
-  theme_classic()
+  scale_x_discrete(labels = c("AAC", "Articulation/Speech Science", "Aural Rehabilitation",
+                              "Cognitive-Linguistic Communication", "Cultural/Linguistic Diversity",
+                              "Hearing and/or Balance", "Higher Education in CSD", "Language Learning and/or Disorders",
+                              "Neurogenic Communication Disorders", "Social Aspects of Communication",
+                              "Speech Sound Disorders", "Telepractice in CSD", "Voice and Resonance")) +
+  theme_classic() + 
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+        plot.caption = element_text(size = 7, hjust = 1),
+        aspect.ratio = .5)
 
-ggsave("Figures/research_areas.png", plot = last_plot())
-    
+research_plot
+
+ggsave("Figures/research_area_plot.png", plot = last_plot())
 
 ```
+
+
+## Familiarity and Use of Open Science
+
+```{r, warning = F, message = F}
+
+fam_plot <- demo_full |>
+  dplyr::select(id, focus_group, fam_os) |>
+  dplyr::group_by(focus_group, fam_os) |>
+  dplyr::summarize(n = n()) |>
+  ggplot() + 
+  aes(x = fam_os,
+      y = n,
+      group = focus_group,
+      color = focus_group,
+      fill = focus_group) +
+  geom_bar(stat = "identity", position=position_dodge(), alpha = .5) +
+  labs(title = "Familiarity with Open Science Practices", 
+       x = "", y = "Count", 
+       color = "Group", fill = "Group") +
+  scale_color_manual(values = my_pal) +
+  scale_fill_manual(values = my_pal) +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        aspect.ratio = 1)
+
+fam_plot
+
+
+```
+
+
+## Use of Open Science
+
+```{r, warning = F, message = F}
+
+use_plot <- demo_full |>
+  dplyr::select(id, focus_group, use_os) |>
+  dplyr::group_by(focus_group, use_os) |>
+  dplyr::summarize(n = n()) |>
+  ggplot() + 
+  aes(x = use_os,
+      y = n,
+      group = focus_group,
+      color = focus_group,
+      fill = focus_group) +
+  geom_bar(stat = "identity", position=position_dodge(), alpha = .5) +
+  labs(title = "Use of Open Science Practices", 
+       x = "", y = "Count", 
+       color = "Group", fill = "Group") +
+  scale_color_manual(values = my_pal) +
+  scale_fill_manual(values = my_pal) +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        aspect.ratio = 1)
+
+use_plot
+
+```
+
+
+
+```{r, eval = F, warning = F, message = F}
+
+# Combining the ratings plot
+
+ratings_plot <- ggpubr::ggarrange(fam_plot, use_plot, ncol = 2, align = "h", common.legend = T, legend = "bottom")
+
+ggpubr::annotate_figure(ratings_plot, bottom = text_grob("Note: None of the participants from the Non-R1 group indicated they were 'extremely familiar' with open science practices.", hjust = 1, x = 1, face = "italic", size = 6))
+
+ggsave("Figures/ratings_plot.png", plot = last_plot())
+```
+
 
 
 ```{r, echo = F, warning = F, message = F}
