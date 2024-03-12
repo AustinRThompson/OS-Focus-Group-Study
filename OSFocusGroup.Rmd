@@ -338,6 +338,26 @@ allUniqueCodes <- cb_master %>%
   arrange(Category)
 
 # Initial Code Count
+## By Group
+freq_initial <- allUniqueCodes %>%
+  dplyr::mutate(Group = case_when(
+    Transcript == "R1_1" ~ "R1",
+    Transcript == "R1_2" ~ "R1",
+    Transcript == "nonR1_1" ~ "non-R1",
+    Transcript == "nonR1_2" ~ "non-R1",
+  )) %>%
+  dplyr::group_by(Group, Category, Subcategory, AxialCode, InitialCode, InitialCodeName) %>% 
+  dplyr::summarize(Comment = paste0(Comment, collapse = " // "),
+                   N = sum(NROW(InitialCode))) %>%
+  dplyr::ungroup() %>%
+  dplyr::relocate(N, .before = Comment)
+
+utils::write.csv(
+  x = freq_initial,
+  file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Initial Codes.csv",
+  fileEncoding = "UTF-8")
+
+## All Participants
 freq_initial <- allUniqueCodes %>%
   dplyr::group_by(Category, Subcategory, AxialCode, InitialCode, InitialCodeName) %>% 
   dplyr::summarize(Comment = paste0(Comment, collapse = " // "),
@@ -351,6 +371,34 @@ utils::write.csv(
   fileEncoding = "UTF-8")
 
 # Axial Code Count
+## By Group
+freq_axial <- allUniqueCodes %>%
+  dplyr::mutate(Group = case_when(
+    Transcript == "R1_1" ~ "R1",
+    Transcript == "R1_2" ~ "R1",
+    Transcript == "nonR1_1" ~ "non-R1",
+    Transcript == "nonR1_2" ~ "non-R1",
+  )) %>%
+  dplyr::group_by(Group, Category, Subcategory, AxialCode) %>% 
+  dplyr::summarize(Comment = paste0(Comment, collapse = " // "),
+                   N = sum(NROW(AxialCode))) %>%
+  dplyr::ungroup() %>%
+  dplyr::relocate(N, .before = Comment) %>%
+  as.tibble() %>%
+  base::merge(., read.csv(file = "Data/Raw Data/Codebook Data/Axial Codenames.csv") %>%
+                dplyr::select(`Code.abbreviation`,`Full.code.name`) %>%
+                dplyr::rename(AxialCode = 1,
+                              AxialCodeName = 2),
+              all.x = TRUE) %>%
+  dplyr::relocate(c(AxialCode, AxialCodeName), .before = N) %>%
+  arrange(Group, Category)
+
+utils::write.csv(
+  x = freq_axial,
+  file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Axial Codes.csv",
+  fileEncoding = "UTF-8")
+
+## All Participants
 freq_axial <- allUniqueCodes %>%
   dplyr::group_by(Category, Subcategory, AxialCode) %>% 
   dplyr::summarize(Comment = paste0(Comment, collapse = " // "),
@@ -372,6 +420,26 @@ utils::write.csv(
   fileEncoding = "UTF-8")
 
 # Subcategory Code Count
+## By Group
+freq_Subcategory <- allUniqueCodes %>%
+  dplyr::mutate(Group = case_when(
+    Transcript == "R1_1" ~ "R1",
+    Transcript == "R1_2" ~ "R1",
+    Transcript == "nonR1_1" ~ "non-R1",
+    Transcript == "nonR1_2" ~ "non-R1",
+  )) %>%
+  dplyr::group_by(Group, Category, Subcategory) %>% 
+  dplyr::summarize(Comment = paste0(Comment, collapse = " // "),
+                   N = sum(NROW(InitialCode))) %>%
+  dplyr::ungroup() %>%
+  dplyr::relocate(N, .before = Comment)
+
+utils::write.csv(
+  x = freq_Subcategory,
+  file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Subcategory Codes.csv",
+  fileEncoding = "UTF-8")
+
+## All Participants
 freq_Subcategory <- allUniqueCodes %>%
   dplyr::group_by(Category, Subcategory) %>% 
   dplyr::summarize(Comment = paste0(Comment, collapse = " // "),
@@ -385,6 +453,26 @@ utils::write.csv(
   fileEncoding = "UTF-8")
 
 # Category Code Count
+## By Group
+freq_Category <- allUniqueCodes %>%
+  dplyr::mutate(Group = case_when(
+    Transcript == "R1_1" ~ "R1",
+    Transcript == "R1_2" ~ "R1",
+    Transcript == "nonR1_1" ~ "non-R1",
+    Transcript == "nonR1_2" ~ "non-R1",
+  )) %>%
+  dplyr::group_by(Group, Category) %>% 
+  dplyr::summarize(Comment = paste0(Comment, collapse = " // "),
+                   N = sum(NROW(InitialCode))) %>%
+  dplyr::ungroup() %>%
+  dplyr::relocate(N, .before = Comment)
+
+utils::write.csv(
+  x = freq_Category,
+  file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Category Codes.csv",
+  fileEncoding = "UTF-8")
+
+## All Participants
 freq_Category <- allUniqueCodes %>%
   dplyr::group_by(Category) %>% 
   dplyr::summarize(Comment = paste0(Comment, collapse = " // "),
@@ -971,177 +1059,195 @@ PR <-practiceExp(practice = "PR",
 OS <-practiceExp(practice = "OS",
                   codeData = codes)
 ```
-## Plots
-### Experience
+# Plots
+## Figure 1 - What they want to learn
 ```{r}
-experience <- rbind(
-  OD, OA, OM, SA, PR, OS
-) %>%
-  dplyr::group_by(Group, Practice) %>%
-  dplyr::summarise(
-    #U = sum(U),
-    LPE = sum(LPE),
-    #aware = sum(aware),
-    #KOP = sum(KOP),
-    TE = sum(TE),
-    PE = sum(PE),
-    I = sum(I)
-  ) %>%
-  tidyr::pivot_longer(cols = LPE:I,
-                      names_to = "ExpLvl",
-                      values_to = "Count") %>%
-  dplyr::mutate(Count = ifelse(ExpLvl == "LPE",Count*-1,Count),
-                Count = ifelse(ExpLvl == "U",Count*-1,Count),
-                ExpLvl = factor(ExpLvl,
-                                levels = c(
-                                  #"U",
-                                  "LPE",
-                                  #"aware",
-                                  #"KOP",
-                                  "I",
-                                  "TE",
-                                  "PE"),
-                                labels = c(
-                                  #"Uncertain about... (U)",
-                                  "No Exp with... (LPE)",
-                                   #"Aware of... (A)",
-                                   #"Knowledge of... (KOP)",
-                                  "Intends to use... (I)",
-                                  "Received training with... (TE)",
-                                  "Prior Exp with... (PE)")),
-                Practice = factor(Practice,
-                                  levels = c("OM",
-                                             "OA",
-                                             "PR",
-                                             "OD",
-                                             "SA",
-                                             "OS")),
-                Group = factor(Group,
-                               levels = c("nonR1",
-                                          "R1"),
-                               labels = c("Non-R1",
-                                          "R1")))
+Pal <- c("#4F6980",
+         "#849DB1",
+         "#A2CEAA",
+         "#638B66",
+         "#F47942",
+         "#FBB04E",
+         "#B66353",
+         "#D7CE9F")
 
-experience %>%
-ggplot() +
-  aes(fill = ExpLvl,
-      y = Count,
-      x = Practice,
-      order = ExpLvl) + 
-    geom_bar(
-      position = "stack",
-      stat = "identity") +
+WTL <- read.csv(
+  file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Initial Codes.csv"
+) %>%
+  dplyr::filter(Subcategory == "3.1 - Information") %>%
+  dplyr::group_by(Group,Subcategory,InitialCode) %>%
+  dplyr::summarise(N = sum(N)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(proportion = (N / sum(N))*100) %>%
+  dplyr::group_by(Subcategory,InitialCode) %>%
+  dplyr::mutate(allN = sum(N)) %>%
+  dplyr::ungroup() %>%
+  arrange(allN) %>%
+  dplyr::filter(InitialCode != "LP-P") %>%
+  dplyr::filter(InitialCode != "LP-C") %>%
+  dplyr::filter(InitialCode != "LP-PPOV") %>%
+  dplyr::mutate(InitialCode = factor(InitialCode,
+                                     levels = unique(InitialCode),
+                                     labels = c(
+                                       "IRB Policies",
+                                       "OS Workflow",
+                                       "Institutional Policies",
+                                       "Self-Archiving",
+                                       "Open Peer Review",
+                                       "Open Access",
+                                       "Preregistration",
+                                       "Open Data",
+                                       "Open Educational Resources",
+                                       "All OS Practices"
+                                     )))
+
+WTL %>%
+  dplyr::mutate(label = paste0("  ", Group," (",round(proportion,digits = 2),"%)")) %>%
+  ggplot() +
+  aes(y = N,
+      x = InitialCode,
+      alpha = Group,
+      label = label) +
+  
+  geom_bar(stat = "identity",
+           fill = Pal[1]) +
+  
+  # Labels - Currently suppressed
+  #geom_text(aes(y = allN),
+  #          position = position_dodge2(width = 0.9, preserve = "single"),
+  #          alpha = .4,
+  #          vjust=0.25,
+  #          hjust=0) +
+  
+  # Changing the alpha values
+  scale_alpha_manual(values = c(.6,1)) +
+
+  # Modifying the theme
   theme_minimal() +
-  facet_wrap(~ Group) +
-  theme(panel.border = element_rect(color = "darkgrey",
-                                    fill = NA),
-        legend.position = "bottom") +
-  # Colors
-  scale_fill_viridis(discrete = TRUE,
-                     direction = -1) +
+  theme(
+    # remove the vertical grid lines
+    panel.grid.major.y = element_blank(),
+
+    legend.position = "right",
+    axis.text.y = element_text(hjust = 1),
+    text = element_text(family="Arial")) +
   
-  # Labels
-  labs(
-    fill = "Experience Level:",
-    y = "Frequency Count",
-    title = "Experience by OS Practice and Institutional Setting"
-  )
+  # Modifying the axis labels
+  labs(y = NULL,
+       x = NULL) +
   
+  # Flipping the axes
+  coord_flip()
+
 ggsave(
-  filename = "Figures/ExperiencePlot.png",
-  height = 4,
-  width = 6,
+  plot = last_plot(),
+  filename = "Figures/F1_WTL Topics.png",
+  height = 6,
+  width = 8,
   units = "in",
-  scale = 1.4,
-  bg= "white"
+  scale = .8,
+  bg = "white"
 )
 ```
-### Knowledge
+
+## Figure 2 - Knowledge & Experience
 ```{r}
-knowledge <- rbind(
-  OD, OA, OM, SA, PR, OS
+Pal <- c("#4F6980",
+         "#849DB1",
+         "#A2CEAA",
+         "#638B66",
+         "#F47942",
+         "#FBB04E",
+         "#B66353",
+         "#D7CE9F")
+
+
+knowledgeExperience <- read.csv(
+  file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Initial Codes.csv"
 ) %>%
-  dplyr::group_by(Group, Practice) %>%
-  dplyr::summarise(
-    U = sum(U),
-    #LPE = sum(LPE),
-    aware = sum(aware),
-    KOP = sum(KOP),
-    #TE = sum(TE),
-    #PE = sum(PE),
-    #I = sum(I)
-  ) %>%
-  tidyr::pivot_longer(cols = U:KOP,
-                      names_to = "ExpLvl",
-                      values_to = "Count") %>%
+  dplyr::filter(grepl(pattern = "KOP-|U-|PE-|LPE-",
+                      x = InitialCode)) %>%
   dplyr::mutate(
-                Count = ifelse(ExpLvl == "U",Count*-1,Count),
-                ExpLvl = factor(ExpLvl,
-                                levels = c(
-                                  "U",
-                                  #"LPE",
-                                  "aware",
-                                  "KOP"),
-                                  #"I",
-                                  #"TE",
-                                  #"PE",
+    Domain = case_when(
+      grepl(pattern = "U-",InitialCode) ~ "Uncertain About...",
+      grepl(pattern = "KOP-",InitialCode) ~ "Knowledgeable About...",
+      grepl(pattern = "LPE-",InitialCode) ~ "No Prior Experience With...",
+      grepl(pattern = "PE-",InitialCode) ~ "Prior Experience With..."),
+    Domain = factor(Domain, levels = c("Knowledgeable About...",
+                                       "Uncertain About...",
+                                       "Prior Experience With...",
+                                       "No Prior Experience With...")),
+    Topic = case_when(
+      grepl(pattern = "SA",InitialCode) ~ "Self-Archiving",
+      grepl(pattern = "OA",InitialCode) ~ "Open Access",
+      grepl(pattern = "OM",InitialCode) ~ "Open Materials",
+      grepl(pattern = "OD",InitialCode) ~ "Open Data",
+      grepl(pattern = "OER",InitialCode) ~ "Open Education Resources",
+      grepl(pattern = "OS", InitialCode) ~ "Open Science (General)",
+      grepl(pattern = "PR", InitialCode) ~ "Preregistration",
+      grepl(pattern = "NIH", InitialCode) ~ "NIH Procedures",
+    ),
+    Topic = factor(Topic, levels = c("Open Science (General)",
+                                     "Open Access",
+                                     "Self-Archiving",
+                                     "Preregistration",
+                                     "Open Data",
+                                     "Open Materials",
+                                     "NIH Procedures",
+                                     "Open Education Resources"
+                                     ))) %>%
+  arrange(desc(N))
 
-                                labels = c(
-                                  "Uncertain about... (U)",
-                                  #"No Exp with... (LPE)",
-                                   "Aware of... (A)",
-                                   "Knowledge of... (KOP)"),
-                                  #"Intends to use... (I)",
-                                  #"Received training with... (TE)",
-                                  #"Prior Exp with... (PE)",
-                                  ),
-                Practice = factor(Practice,
-                                  levels = c("OM",
-                                             "OA",
-                                             "PR",
-                                             "OD",
-                                             "SA",
-                                             "OS")),
-                Group = factor(Group,
-                               levels = c("nonR1",
-                                          "R1"),
-                               labels = c("Non-R1",
-                                          "R1")))
-
-knowledge %>%
-ggplot() +
-  aes(fill = ExpLvl,
-      y = Count,
-      x = Practice,
-      order = ExpLvl) + 
-    geom_bar(
-      position = "stack",
-      stat = "identity") +
-  theme_minimal() +
-  facet_wrap(~ Group) +
-  theme(panel.border = element_rect(color = "darkgrey",
-                                    fill = NA),
-        legend.position = "bottom") +
+knowledgeExperience %>%
+  dplyr::group_by(Group, Domain, Topic) %>%
+  dplyr::summarise(N = sum(N)) %>%
+  ggplot() +
+  aes(
+    y = N,
+    x = Group,
+    fill = Topic,
+  ) +
+  
+  
+  geom_bar(position="stack", stat="identity") +
+  facet_wrap(~Domain,
+             scales = "free_x",
+             nrow = 1) +
+  
   # Colors
-  scale_fill_viridis(discrete = TRUE,
-                     direction = -1) +
+  scale_fill_manual(values = Pal) +
   
-  # Labels
-  labs(
-    fill = "Knowledge Level:",
-    y = "Frequency Count",
-    title = "Knowledge by OS Practice and Institutional Setting"
-  )
+  # Modifying the theme
+  theme_minimal() +
+  theme(
+    # remove the vertical grid lines
+    panel.grid.major.x = element_blank(),
+
+    legend.position = "bottom",
+    #axis.text.x = element_text(hjust = 1),
+    text = element_text(family="Arial")) +
   
+  # Modifying the axis labels
+  labs(y = NULL,
+       x = NULL) +
+  
+  # Flipping the axes
+  coord_cartesian(clip = "off")
+
 ggsave(
-  filename = "Figures/KnowledgePlot.png",
+  plot = last_plot(),
+  filename = "Figures/F2_Knowledge and Experience.png",
   height = 4,
-  width = 6,
+  width = 8,
   units = "in",
-  scale = 1.4,
-  bg= "white"
+  scale = .9,
+  bg = "white"
 )
+
 ```
+
+
+
 # Codebook
 ```{r}
 
