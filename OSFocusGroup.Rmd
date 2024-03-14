@@ -1086,26 +1086,41 @@ WTL <- read.csv(
   dplyr::filter(InitialCode != "LP-P") %>%
   dplyr::filter(InitialCode != "LP-C") %>%
   dplyr::filter(InitialCode != "LP-PPOV") %>%
-  dplyr::mutate(InitialCode = factor(InitialCode,
-                                     levels = unique(InitialCode),
-                                     labels = c(
-                                       "IRB Policies",
-                                       "OS Workflow",
-                                       "Institutional Policies",
-                                       "Self-Archiving",
-                                       "Open Peer Review",
-                                       "Open Access",
-                                       "Preregistration",
-                                       "Open Data",
-                                       "Open Educational Resources",
-                                       "All OS Practices"
-                                     )))
+  dplyr::mutate(
+    Topic = case_when(
+      grepl(pattern = "SA",InitialCode) ~ "Self-Archiving",
+      grepl(pattern = "OA",InitialCode) ~ "Open Access",
+      grepl(pattern = "OM",InitialCode) ~ "Open Materials",
+      grepl(pattern = "OD",InitialCode) ~ "Open Data",
+      grepl(pattern = "OER",InitialCode) ~ "Open Education Resources",
+      grepl(pattern = "OSW", InitialCode) ~ "Open Science Workflow",
+      grepl(pattern = "OS", InitialCode) ~ "All OS Practices",
+      grepl(pattern = "OPR", InitialCode) ~ "Open Peer Review",
+      grepl(pattern = "PR", InitialCode) ~ "Preregistration",
+      grepl(pattern = "NIH", InitialCode) ~ "NIH Procedures",
+      grepl(pattern = "IRB", InitialCode) ~ "IRB Policies",
+      grepl(pattern = "IP", InitialCode) ~ "Institutional Policies",
+    ),
+    Topic = factor(Topic, levels = rev(c("All OS Practices",
+                                     "Preregistration",
+                                     "Self-Archiving",
+                                     "Open Access",
+                                     "Open Data",
+                                     
+                                     "Open Peer Review",
+                                     "Open Materials",
+                                     "Open Science Workflow",
+                                     "NIH Procedures",
+                                     "Institutional Policies",
+                                     "IRB Policies",
+                                     "Open Education Resources"
+                                     ))))
 
 WTL %>%
   dplyr::mutate(label = paste0("  ", Group," (",round(proportion,digits = 2),"%)")) %>%
   ggplot() +
   aes(y = N,
-      x = InitialCode,
+      x = Topic,
       alpha = Group,
       label = label) +
   
