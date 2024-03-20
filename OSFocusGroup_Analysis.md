@@ -1,7 +1,7 @@
 ---
 title: "OS Focus Group: Data Prep"
 author: "Austin Thompson, Ph.D., CCC-SLP"
-date: "`r Sys.Date()`"
+date: "2024-03-20"
 output: 
   html_document:
     keep_md: true
@@ -10,9 +10,7 @@ output:
     toc_float: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 # Purpose
 
@@ -22,18 +20,67 @@ Link to OSF Project Page: https://osf.io/tprzu/
 
 # Packages
 Loading in the required packages.
-```{r}
+
+```r
 library(tidyverse) # install.packages('tidyverse')
+```
+
+```
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.3     ✔ readr     2.1.4
+## ✔ forcats   1.0.0     ✔ stringr   1.5.0
+## ✔ ggplot2   3.4.4     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+```
+
+```r
 library(viridis)  # install.packages('viridis')
+```
+
+```
+## Loading required package: viridisLite
+```
+
+```r
 library(wordcloud) # install.packages('wordcloud')
+```
+
+```
+## Loading required package: RColorBrewer
+```
+
+```r
 library(tm) # install.packages('tm')
+```
+
+```
+## Loading required package: NLP
+## 
+## Attaching package: 'NLP'
+## 
+## The following object is masked from 'package:ggplot2':
+## 
+##     annotate
+```
+
+```r
 library(extrafont) # install.packages('extrafont')
+```
+
+```
+## Registering fonts with R
 ```
 
 # Loading the Data
 ## Function to Load the Transcripts
 Function for loading and cleaning the transcripts.
-```{r}
+
+```r
 readTranscript <- function(file, transcriptName, commentRows) {
   transcript <- utils::read.delim(file,
                                    fileEncoding="UTF-8") %>%
@@ -102,7 +149,8 @@ readTranscript <- function(file, transcriptName, commentRows) {
 
 ## Loading the Transcripts
 Loading the transcripts that were exported from Microsoft Word as .txt files.
-```{r}
+
+```r
 # R1 1
 transcript_R1_1 <- readTranscript(
   file = "Data/Raw Data/Transcripts/MASTER_R1_Transcript_2023_05_15.txt",
@@ -157,7 +205,16 @@ masterTranscript <- rbind(
       # When the participant was from the R1 transcript, add "R1-" to their ID.
       grepl(pattern = "R1", Transcript) == TRUE ~ paste0("R1-", Participant)
   ))
+```
 
+```
+## Warning: There was 1 warning in `dplyr::mutate()`.
+## ℹ In argument: `Participant = case_when(...)`.
+## Caused by warning in `sprintf()`:
+## ! NAs introduced by coercion
+```
+
+```r
 # Removing the four individual transcripts
 rm(transcript_R1_1,
   transcript_R1_2,
@@ -175,7 +232,8 @@ utils::write.csv(
 In the previous block, we loaded in the transcripts and created a Master Transcript. 
 
 Now we need to load in the coded phrases, which we will then align with the Master Transcript comments. These codes & phrases were extracted from the Microsoft Word documents using a custom Macro (in the github, labeled `macro_ExportComments`) and were exported to the `Raw Data/Codes & References` folder as CSV files.
-```{r}
+
+```r
 codeReferences_nonR1_1 <- read.csv(
   file = "Data/Raw Data/Codes & References/CodeReferences_nonR1_1.csv",
   encoding="UTF-8") %>%
@@ -231,7 +289,8 @@ rm(codeReferences_nonR1_1,
 So, now we have the (1) Master Transcripts (i.e., the combination of all of the transcripts), (2) Coded References (i.e., the phrases within the transcripts and their corresponding codes).
 
 Now, we will load in the codebooks, which describe what the codes mean. We have several codebooks: (1) Initial (cb_Initial), (2) Axial (cb_Axial), and (3) Subcategory (cb_Subcat), and (4) Categories (cb_Cat). We are loading all of these in, so that we can calculate the frequency counts for codes as each level of this coding scheme. Importantly, initial codes were merged together to make the axial codes. Axial codes were merged together to create the subcategory codes. Finally, subcategory codes were merged together to make the category codes. So, the codebook data are nested.
-```{r}
+
+```r
 cb_Initial <- read.csv(
   file = "Data/Raw Data/Codebook Data/Initial Codebook.csv",
   fileEncoding = "UTF-8"
@@ -291,7 +350,8 @@ rm(cb_Axial,
 
 ## Merging codeReferences and masterTrasncript
 Now we want to merge the Master Transcript with the Code References to make the `CodedMasterTranscripts`. This will allow us to determine which full comment the coded phrase was obtained from.
-```{r}
+
+```r
 # Load in the codeReferences
 codeReferences <- utils::read.csv(
   file = "Data/Prepped Data/codeReferences.csv",
@@ -319,7 +379,14 @@ codeReferences <- utils::read.csv(
       replacement = "(university)",
       x = Comment,
       fixed = TRUE))
+```
 
+```
+## Warning: Expected 7 pieces. Missing pieces filled with `NA` in 722 rows [1, 2, 3, 4, 5,
+## 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].
+```
+
+```r
 # This is a loop that goes
 NC <- 1
 while(NC <= NROW(codeReferences)) {
@@ -361,11 +428,11 @@ utils::write.csv(
   x = codedMasterTranscript,
   file = "Data/Prepped Data/Master Codebook_coded.csv",
   fileEncoding = "UTF-8")
-
 ```
 
 # Obtaining Frequency Counts
-```{r}
+
+```r
 # Getting rid of redundancy - If a person brought up a code several times (e.g., PE-SA [previous experience - self-archiving], we only want to count that once)
 uniqueCodes <- rio::import(
   file = "Data/Prepped Data/Master Codebook_coded.csv",
@@ -376,7 +443,19 @@ uniqueCodes <- rio::import(
   dplyr::group_by(Transcript, Participant, code) %>%
   dplyr::summarize(Comment = paste0(Comment, collapse = " // ")) %>%
   dplyr::ungroup()
+```
 
+```
+## Warning in arg_reconcile(data.table::fread, input = file, sep = sep, header = header, : The following arguments were ignored for data.table::fread:
+## fileEncoding
+```
+
+```
+## `summarise()` has grouped output by 'Transcript', 'Participant'. You can
+## override using the `.groups` argument.
+```
+
+```r
 # Merging the unique codes with the Master Codebook
 allUniqueCodes <- cb_master %>%
   dplyr::select(Category:codeName) %>%
@@ -392,7 +471,8 @@ rm(uniqueCodes)
 ```
 
 ## Initial Code Frequency Count
-```{r}
+
+```r
 ## By Group
 freq_initial <- allUniqueCodes %>%
   dplyr::mutate(Group = case_when(
@@ -406,7 +486,14 @@ freq_initial <- allUniqueCodes %>%
                    N = sum(NROW(InitialCode))) %>%
   dplyr::ungroup() %>%
   dplyr::relocate(N, .before = Comment)
+```
 
+```
+## `summarise()` has grouped output by 'Group', 'Category', 'Subcategory',
+## 'AxialCode', 'InitialCode'. You can override using the `.groups` argument.
+```
+
+```r
 utils::write.csv(
   x = freq_initial,
   file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Initial Codes.csv",
@@ -419,7 +506,14 @@ freq_initial <- allUniqueCodes %>%
                    N = sum(NROW(InitialCode))) %>%
   dplyr::ungroup() %>%
   dplyr::relocate(N, .before = Comment)
+```
 
+```
+## `summarise()` has grouped output by 'Category', 'Subcategory', 'AxialCode',
+## 'InitialCode'. You can override using the `.groups` argument.
+```
+
+```r
 utils::write.csv(
   x = freq_initial,
   file = "Data/Prepped Data/Frequency Counts/Freq_Initial Codes.csv",
@@ -427,7 +521,8 @@ utils::write.csv(
 ```
 
 ## Axial Code Frequency Count
-```{r}
+
+```r
 ## By Group
 freq_axial <- allUniqueCodes %>%
   dplyr::mutate(Group = case_when(
@@ -449,7 +544,23 @@ freq_axial <- allUniqueCodes %>%
               all.x = TRUE) %>%
   dplyr::relocate(c(AxialCode, AxialCodeName), .before = N) %>%
   arrange(Group, Category)
+```
 
+```
+## Warning: `as.tibble()` was deprecated in tibble 2.0.0.
+## ℹ Please use `as_tibble()` instead.
+## ℹ The signature and semantics have changed, see `?as_tibble`.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+```
+
+```
+## `summarise()` has grouped output by 'Group', 'Category', 'Subcategory'. You can
+## override using the `.groups` argument.
+```
+
+```r
 utils::write.csv(
   x = freq_axial,
   file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Axial Codes.csv",
@@ -470,7 +581,14 @@ freq_axial <- allUniqueCodes %>%
               all.x = TRUE) %>%
   dplyr::relocate(c(AxialCode, AxialCodeName), .before = N) %>%
   arrange(Category)
+```
 
+```
+## `summarise()` has grouped output by 'Category', 'Subcategory'. You can override
+## using the `.groups` argument.
+```
+
+```r
 utils::write.csv(
   x = freq_axial,
   file = "Data/Prepped Data/Frequency Counts/Freq_Axial Codes.csv",
@@ -478,7 +596,8 @@ utils::write.csv(
 ```
 
 ## Subcategory Code Frequency Count
-```{r}
+
+```r
 ## By Group
 freq_Subcategory <- allUniqueCodes %>%
   dplyr::mutate(Group = case_when(
@@ -492,7 +611,14 @@ freq_Subcategory <- allUniqueCodes %>%
                    N = sum(NROW(InitialCode))) %>%
   dplyr::ungroup() %>%
   dplyr::relocate(N, .before = Comment)
+```
 
+```
+## `summarise()` has grouped output by 'Group', 'Category'. You can override using
+## the `.groups` argument.
+```
+
+```r
 utils::write.csv(
   x = freq_Subcategory,
   file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Subcategory Codes.csv",
@@ -505,7 +631,14 @@ freq_Subcategory <- allUniqueCodes %>%
                    N = sum(NROW(InitialCode))) %>%
   dplyr::ungroup() %>%
   dplyr::relocate(N, .before = Comment)
+```
 
+```
+## `summarise()` has grouped output by 'Category'. You can override using the
+## `.groups` argument.
+```
+
+```r
 utils::write.csv(
   x = freq_Subcategory,
   file = "Data/Prepped Data/Frequency Counts/Freq_Subcategory Codes.csv",
@@ -513,7 +646,8 @@ utils::write.csv(
 ```
 
 ## Category Code Frequency Count
-```{r}
+
+```r
 ## By Group
 freq_Category <- allUniqueCodes %>%
   dplyr::mutate(Group = case_when(
@@ -527,7 +661,14 @@ freq_Category <- allUniqueCodes %>%
                    N = sum(NROW(InitialCode))) %>%
   dplyr::ungroup() %>%
   dplyr::relocate(N, .before = Comment)
+```
 
+```
+## `summarise()` has grouped output by 'Group'. You can override using the
+## `.groups` argument.
+```
+
+```r
 utils::write.csv(
   x = freq_Category,
   file = "Data/Prepped Data/Frequency Counts_by Group/Freq_Category Codes.csv",
@@ -545,12 +686,12 @@ utils::write.csv(
   x = freq_Category,
   file = "Data/Prepped Data/Frequency Counts/Freq_Category Codes.csv",
   fileEncoding = "UTF-8")
-
 ```
 
 # Plots
 ## Figure 1 - What they want to learn
-```{r}
+
+```r
 Pal <- c("#4F6980",
          "#849DB1",
          "#A2CEAA",
@@ -615,7 +756,14 @@ WTL <- read.csv(
       Topic == "Open Education Resources" ~ "Practices",
       TRUE ~ "Procedures"
     ))
+```
 
+```
+## `summarise()` has grouped output by 'Group', 'Subcategory'. You can override
+## using the `.groups` argument.
+```
+
+```r
 WTL %>%
   dplyr::mutate(label = paste0("  ", Group," (",round(proportion,digits = 2),"%)")) %>%
   ggplot() +
@@ -658,7 +806,11 @@ WTL %>%
   facet_wrap(~Type,
              ncol = 1,
              scales = "free_y")
+```
 
+![](OSFocusGroup_Analysis_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+
+```r
 ggsave(
   plot = last_plot(),
   filename = "Figures/F1_WTL Topics.png",
@@ -671,7 +823,8 @@ ggsave(
 ```
 
 ## Figure 2 - Knowledge & Experience
-```{r}
+
+```r
 Pal <- c("#4F6980",
          "#849DB1",
          "#A2CEAA",
@@ -753,7 +906,16 @@ knowledgeExperience %>%
   
   # Flipping the axes
   coord_cartesian(clip = "off")
+```
 
+```
+## `summarise()` has grouped output by 'Group', 'Domain'. You can override using
+## the `.groups` argument.
+```
+
+![](OSFocusGroup_Analysis_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
+```r
 ggsave(
   plot = last_plot(),
   filename = "Figures/F2_Knowledge and Experience.png",
@@ -763,5 +925,4 @@ ggsave(
   scale = .9,
   bg = "white"
 )
-
 ```
