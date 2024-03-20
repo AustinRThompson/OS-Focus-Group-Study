@@ -1,13 +1,7 @@
 ---
-title: "OS Focus Group: Data Prep"
+title: "OS Focus Group: Data Preparation and Analysis"
 author: "Austin Thompson, Ph.D., CCC-SLP"
 date: "`r Sys.Date()`"
-output: 
-  html_document:
-    keep_md: true
-    code_folding: hide
-    toc: true
-    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
