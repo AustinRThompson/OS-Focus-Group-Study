@@ -1,21 +1,37 @@
 ---
 title: "OS Focus Group: Data Prep"
+author: "Austin Thompson, Ph.D., CCC-SLP"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Purpose
+
+This is the data preparation and analysis script. Here, we combine and wrangle the raw transcription files, the coded phrases, and the codebook data. In this document, we create combined frequency count CSV files to show the codes and the comments they describe. We also create some vizualizations for some of the findings.
+
+Link to OSF Project Page: https://osf.io/tprzu/
 
 # Packages
+Loading in the required packages.
 ```{r}
 library(tidyverse) # install.packages('tidyverse')
 library(viridis)  # install.packages('viridis')
 library(wordcloud) # install.packages('wordcloud')
 library(tm) # install.packages('tm')
 library(extrafont) # install.packages('extrafont')
-#loadfonts(device = "all")
 ```
 
 # Loading the Data
-## Function for Load the Transcripts
-Function for loading and cleaning the transcripts
+## Function to Load the Transcripts
+Function for loading and cleaning the transcripts.
 ```{r}
 readTranscript <- function(file, transcriptName, commentRows) {
   transcript <- utils::read.delim(file,
@@ -53,6 +69,7 @@ readTranscript <- function(file, transcriptName, commentRows) {
                   TRUE ~ commentNumber
                 ),
                 Participant = case_when(
+                  # Here, we are fixing an issue with participant 11, whose comment went to a second line
                   Participant == "So yeah, I I did make myself a personal website, and it does take a lot of time and work, and" ~ "11",
                   TRUE ~ Participant
                 )) %>%
@@ -82,7 +99,8 @@ readTranscript <- function(file, transcriptName, commentRows) {
 }
 ```
 
-## Loading the transcripts
+## Loading the Transcripts
+Loading the transcripts that were exported from Microsoft Word as .txt files.
 ```{r}
 # R1 1
 transcript_R1_1 <- readTranscript(
@@ -112,6 +130,7 @@ transcript_nonR1_2 <- readTranscript(
   commentRows = c(2,112)
 )
 
+# Combining the four transcripts into a single master transcropt
 masterTranscript <- rbind(
   transcript_R1_1,
   transcript_R1_2,
@@ -119,21 +138,32 @@ masterTranscript <- rbind(
   transcript_nonR1_2) %>%
   dplyr::mutate(
     Participant = case_when(
+      
+      # When the participant was the facilitator, leave their ID as F
       Participant == "F" ~ "F",
+      
+      # For all other participants, format them as 01, 02, etc
       Participant != "F" ~ sprintf("%02d", as.numeric(Participant)),
     ),
     Participant = case_when(
+     
+      # When the participant was the facilitator, leave their ID as F
       Participant == "F" ~ "F",
+      
+      # When the participant was from the nonR1 transcript, add "nR1-" to their ID.
       grepl(pattern = "nonR1", Transcript) == TRUE ~ paste0("nR1-", Participant),
+      
+      # When the participant was from the R1 transcript, add "R1-" to their ID.
       grepl(pattern = "R1", Transcript) == TRUE ~ paste0("R1-", Participant)
   ))
 
+# Removing the four individual transcripts
 rm(transcript_R1_1,
   transcript_R1_2,
   transcript_nonR1_1,
   transcript_nonR1_2)
 
-# Export the codeReferences
+# Exporting the master transcript to the prepped data folder.
 utils::write.csv(
   x = masterTranscript,
   file = "Data/Prepped Data/masterTranscript.csv",
@@ -141,6 +171,9 @@ utils::write.csv(
 ```
 
 ## Load the Codes & References
+In the previous block, we loaded in the transcripts and created a Master Transcript. 
+
+Now we need to load in the coded phrases, which we will then align with the Master Transcript comments. These codes & phrases were extracted from the Microsoft Word documents using a custom Macro (in the github, labeled `macro_ExportComments`) and were exported to the `Raw Data/Codes & References` folder as CSV files.
 ```{r}
 codeReferences_nonR1_1 <- read.csv(
   file = "Data/Raw Data/Codes & References/CodeReferences_nonR1_1.csv",
@@ -162,6 +195,7 @@ codeReferences_R1_2 <- read.csv(
   encoding="UTF-8") %>%
   dplyr::mutate(Transcript = "R1_2")
 
+# Combining the four codeReferences into one
 codeReferences <- rbind(
   codeReferences_nonR1_1,
   codeReferences_nonR1_2,
@@ -173,13 +207,13 @@ codeReferences <- rbind(
                 Comment = `Reference.Text`,
                 Date = `Date...Time`) %>%
   
-  # Filtering out non-code commments
+  # Filtering out non-code comments. These are comments that were not codes, but notes to the coding team.
   dplyr::filter(!grepl(pattern = "_Re-opened_", x = Code)) %>%
   dplyr::filter(!grepl(pattern = "_Marked as resolved_", x = Code)) %>%
   dplyr::filter(!grepl(pattern = "started coding first 3 responses for", x = Code)) %>%
   dplyr::filter(!grepl(pattern = "Note:", x = Code))
 
-# Export the codeReferences
+# Export the codeReferences to the Prepped Data folder.
 utils::write.csv(
   x = codeReferences,
   file = "Data/Prepped Data/codeReferences.csv",
@@ -193,6 +227,9 @@ rm(codeReferences_nonR1_1,
 ```
 
 ## Codebook Data
+So, now we have the (1) Master Transcripts (i.e., the combination of all of the transcripts), (2) Coded References (i.e., the phrases within the transcripts and their corresponding codes).
+
+Now, we will load in the codebooks, which describe what the codes mean. We have several codebooks: (1) Initial (cb_Initial), (2) Axial (cb_Axial), and (3) Subcategory (cb_Subcat), and (4) Categories (cb_Cat). We are loading all of these in, so that we can calculate the frequency counts for codes as each level of this coding scheme. Importantly, initial codes were merged together to make the axial codes. Axial codes were merged together to create the subcategory codes. Finally, subcategory codes were merged together to make the category codes. So, the codebook data are nested.
 ```{r}
 cb_Initial <- read.csv(
   file = "Data/Raw Data/Codebook Data/Initial Codebook.csv",
@@ -233,24 +270,28 @@ cb_Cat <- read.csv(
   dplyr::filter(Category != "") %>%
   unique()
 
-# Creating the Master
+# Creating the Master Codebook
 cb_master <- base::merge(cb_Axial,cb_Subcat, all = TRUE, no.dups = F) %>%
   base::merge(.,cb_Cat, all = TRUE, no.dups = F) %>%
   dplyr::select(Category, Subcategory, axialCode, initialCode, codeName, definition)
   
-# Export the codeReferences
+# Export the Master Codebook
 utils::write.csv(
   x = cb_master,
   file = "Data/Prepped Data/Master Codebook.csv",
   fileEncoding = "UTF-8")
 
+# Removong the four individual codebooks.
 rm(cb_Axial,
    cb_Initial,
-   cb_subcat)
+   cb_Subcat,
+   cb_Cat)
 ```
 
 ## Merging codeReferences and masterTrasncript
+Now we want to merge the Master Transcript with the Code References to make the `CodedMasterTranscripts`. This will allow us to determine which full comment the coded phrase was obtained from.
 ```{r}
+# Load in the codeReferences
 codeReferences <- utils::read.csv(
   file = "Data/Prepped Data/codeReferences.csv",
   fileEncoding = "UTF-8") %>%
@@ -260,6 +301,8 @@ codeReferences <- utils::read.csv(
                       values_to = "code") %>%
   dplyr::select(!name) %>%
   dplyr::filter(!is.na(code)) %>%
+  
+  # Remove and spaces in the code (example "B - T" would turn into "B-T")
   dplyr::mutate(code = gsub(pattern = " ",
                             replacement = "",
                             code)) %>%
@@ -269,15 +312,18 @@ codeReferences <- utils::read.csv(
                 Comment = gsub(pattern = "<P>",
                                replacement = " ",
                                x = Comment)) %>%
-  # Changing instances of [University] to (University) so they arent removed in the next step
+  # Changing instances of [University] to (University) so they aren't removed in the next step
     dplyr::mutate(Comment = gsub(
       pattern = "[university]",
       replacement = "(university)",
       x = Comment,
       fixed = TRUE))
 
+# This is a loop that goes
 NC <- 1
 while(NC <= NROW(codeReferences)) {
+  
+  # In the master transcript, let's find which comment the coded phrase comes from.
   comment <- masterTranscript %>%
     dplyr::filter(stringr::str_detect(string = masterTranscript$Comment,
                     pattern = fixed(codeReferences$Comment[NC]))) %>%
@@ -287,17 +333,18 @@ while(NC <= NROW(codeReferences)) {
     commentReference <- codeReferences %>%
     slice(NC)
   } else {
+    #
     commentReference <- codeReferences %>%
     slice(NC) %>%
     dplyr::mutate(fullComment = comment$Comment,
                   Participant = comment$Participant)
   }
   
-  
+  # Creating the codedMasterTranscript, which is the combination of codeReferences and the masterTranscript
   if(NC == 1) {
-    allcodeReferences <- commentReference
+    codedMasterTranscript <- commentReference
   } else {
-    allcodeReferences <- allcodeReferences %>%
+    codedMasterTranscript <- codedMasterTranscript %>%
       rbind(.,commentReference)
   }
   
@@ -306,27 +353,30 @@ while(NC <= NROW(codeReferences)) {
   rm(commentReference)
 }
 
+rm(comment)
 
-```
+# Export the Master Codebook
+utils::write.csv(
+  x = codedMasterTranscript,
+  file = "Data/Prepped Data/Master Codebook_coded.csv",
+  fileEncoding = "UTF-8")
 
-# Descriptive Data
-## Participants
-```{r}
-masterTranscript %>%
-  dplyr::filter(Participant != "F") %>%
-  dplyr::group_by(Transcript) %>%
-  dplyr::summarise(N = NROW(unique(Participant)))
 ```
 
 # Obtaining Frequency Counts
 ```{r}
-# Getting rid of redundancy
-uniqueCodes <- allcodeReferences %>%
+# Getting rid of redundancy - If a person brought up a code several times (e.g., PE-SA [previous experience - self-archiving], we only want to count that once)
+uniqueCodes <- rio::import(
+  file = "Data/Prepped Data/Master Codebook_coded.csv",
+  fileEncoding = "UTF-8") %>%
   dplyr::mutate(Comment = paste0(Participant,": ",Comment)) %>%
+  
+  # Collapse all of the comments across transcripts, participants, and codes into the Comment variable
   dplyr::group_by(Transcript, Participant, code) %>%
   dplyr::summarize(Comment = paste0(Comment, collapse = " // ")) %>%
   dplyr::ungroup()
 
+# Merging the unique codes with the Master Codebook
 allUniqueCodes <- cb_master %>%
   dplyr::select(Category:codeName) %>%
   dplyr::rename(code = initialCode) %>%
@@ -337,7 +387,11 @@ allUniqueCodes <- cb_master %>%
                 InitialCodeName = codeName) %>%
   arrange(Category)
 
-# Initial Code Count
+rm(uniqueCodes)
+```
+
+## Initial Code Frequency Count
+```{r}
 ## By Group
 freq_initial <- allUniqueCodes %>%
   dplyr::mutate(Group = case_when(
@@ -369,8 +423,10 @@ utils::write.csv(
   x = freq_initial,
   file = "Data/Prepped Data/Frequency Counts/Freq_Initial Codes.csv",
   fileEncoding = "UTF-8")
+```
 
-# Axial Code Count
+## Axial Code Frequency Count
+```{r}
 ## By Group
 freq_axial <- allUniqueCodes %>%
   dplyr::mutate(Group = case_when(
@@ -418,8 +474,10 @@ utils::write.csv(
   x = freq_axial,
   file = "Data/Prepped Data/Frequency Counts/Freq_Axial Codes.csv",
   fileEncoding = "UTF-8")
+```
 
-# Subcategory Code Count
+## Subcategory Code Frequency Count
+```{r}
 ## By Group
 freq_Subcategory <- allUniqueCodes %>%
   dplyr::mutate(Group = case_when(
@@ -451,8 +509,10 @@ utils::write.csv(
   x = freq_Subcategory,
   file = "Data/Prepped Data/Frequency Counts/Freq_Subcategory Codes.csv",
   fileEncoding = "UTF-8")
+```
 
-# Category Code Count
+## Category Code Frequency Count
+```{r}
 ## By Group
 freq_Category <- allUniqueCodes %>%
   dplyr::mutate(Group = case_when(
@@ -487,578 +547,6 @@ utils::write.csv(
 
 ```
 
-# RQ1
-1: What do assistant professors in CSD perceive to be barriers and facilitators to their use of open science practices?
-```{r}
-RQ1_cb <- cb_master %>%
-  dplyr::filter(RQ == "1,2")
-
-RQ1_codes <- uniqueCodes %>%
-  dplyr::rename(initialCode = code) %>%
-  base::merge(., RQ1_cb)
-
-RQ1_ic_summary <- RQ1_codes %>%
-  dplyr::group_by(Subcategory,initialCode) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N)
-
-RQ1_sc_summary <- RQ1_codes %>%
-  dplyr::group_by(Subcategory) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N) %>%
-  dplyr::mutate(Subcategory = factor(Subcategory,
-                                     levels = rev(Subcategory)))
-
-Pal <- c("#DD5846",
-         "#E68275",
-         "#EBA240",
-         "#EFB66C",
-         "#4283C3",
-         "#73A3D3",
-         "#709952",
-         "#7DA262",
-         "#B58ABA",
-         "#CFB2D2")
-
-RQ1_sc_summary %>%
-  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
-                label = case_when(
-                  proportion < 10 ~ NA,
-                  TRUE ~ label
-                )) %>%
-  ggplot() +
-  aes(y = proportion,
-      x = 1,
-      fill = Subcategory) +
-  geom_col() +
-  geom_text(aes(label = label),
-            position = position_stack(vjust = 0.5),
-            color = "white") +
-  scale_fill_manual(values = Pal) +
-  theme_void() +
-  theme(legend.position = "right")
-  
-
-ggsave(
-  plot = last_plot(),
-  filename = "Figures/RQ1_subcat.png",
-  height = 6,
-  width = 4.5,
-  units = "in",
-  scale = 1
-)
-```
-
-# RQ2
-2. How do the perceived barriers and facilitators compare between those at R1 institutions and those at institutions with other classifications?
-```{r}
-RQ2_cb <- cb_master %>%
-  dplyr::filter(RQ == "1,2")
-
-RQ2_codes <- uniqueCodes %>%
-  dplyr::rename(initialCode = code) %>%
-  dplyr::mutate(Group = case_when(
-    Transcript == "R1_1" ~ "R1",
-    Transcript == "R1_2" ~ "R1",
-    Transcript == "nonR1_1" ~ "non-R1",
-    Transcript == "nonR1_2" ~ "non-R1",
-  )) %>%
-  base::merge(., RQ2_cb)
-
-RQ2_ic_summary <- RQ2_codes %>%
-  dplyr::group_by(Group,Subcategory,initialCode) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N)
-
-# Exporting these frequency counts for analysis
-freqByGroup_initial <- RQ2_codes %>%
-  dplyr::group_by(Group,Subcategory,initialCode) %>%
-  dplyr::summarise(N = NROW(initialCode),
-                   Examples = paste0(Comment, collapse = " // ")) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N) %>%
-  base::merge(., cb_master %>%
-                dplyr::select(Subcategory, initialCode, axialCode)) %>%
-  dplyr::relocate(axialCode, .after = Subcategory)
-
-freqByGroup_axial <- freqByGroup_initial %>%
-  dplyr::group_by(Group,Subcategory,axialCode) %>%
-  dplyr::summarise(N = sum(N),
-                   Examples = paste0(Examples, collapse = " // "))
-
-freqByGroup_Subcategory <- freqByGroup_initial %>%
-  dplyr::group_by(Group,Subcategory) %>%
-  dplyr::summarise(N = sum(N),
-                   Examples = paste0(Examples, collapse = " // "))
-
-rio::export(file = "Data/Prepped Data/R1nonR1_initial.csv",
-            freqByGroup_initial)
-rio::export(file = "Data/Prepped Data/R1nonR1_axial.csv",
-            freqByGroup_axial)
-
-rio::export(file = "Data/Prepped Data/R1nonR1_subcategory.csv",
-            freqByGroup_Subcategory)
-
-RQ2_sc_summary <- RQ2_codes %>%
-  dplyr::group_by(Group, Subcategory) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::mutate(Subcategory = factor(Subcategory,
-                                     levels = rev(RQ1_sc_summary$Subcategory),
-                                     labels = c(
-                                       "Resources",
-                                       "Attitudes",
-                                       "Study Components",
-                                       "Expectations, Policies, & Regulations",
-                                       "Knowledge",
-                                       "Working with Others",
-                                       "Inequality",
-                                       "Training",
-                                       "Personal",
-                                       "Past Experience"
-                                     ))) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N)
-
-Pal <- c("#DD5846",
-         "#E68275",
-         "#EBA240",
-         "#EFB66C",
-         "#4283C3",
-         "#73A3D3",
-         "#709952",
-         "#7DA262",
-         "#B58ABA",
-         "#B58ABA")
-
-RQ2_sc_summary %>%
-  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
-                label = case_when(
-                  proportion < 3 ~ NA,
-                  TRUE ~ label
-                )) %>%
-  ggplot() +
-  aes(y = proportion,
-      x = Group,
-      fill = Subcategory) +
-  geom_col() +
-  geom_text(aes(label = label),
-            position = position_stack(vjust = 0.5),
-            color = "white") +
-  scale_fill_manual(values = Pal) +
-  theme_void() +
-  facet_wrap(~Group, scales = "free_x") +
-  theme(legend.position = "right")
-
-RQ2_sc_summary %>%
-    dplyr::mutate(label = paste0("  ", Group," (",round(proportion,digits = 2),"%)")) %>%
-  ggplot() +
-  aes(y = proportion,
-      x = Subcategory,
-      fill = Subcategory,
-      group = Group,
-      alpha = Group,
-      label = label) +
-  geom_bar(position="dodge", stat="identity") +
-  geom_text(position = position_dodge2(width = 0.9, preserve = "single"),
-            alpha = .5,
-            vjust=0.25,
-            hjust=0) +
-  scale_fill_manual(values = Pal) +
-  scale_alpha_manual(values = c(.6,1)) +
-  theme_void() +
-  theme(legend.position = "none",
-        axis.text.y = element_text(hjust = 1),
-        text=element_text(family="Arial")) +
-  coord_flip(ylim = c(0,50))
-  
-
-ggsave(
-  plot = last_plot(),
-  filename = "Figures/RQ2_subcat.png",
-  height = 6,
-  width = 8,
-  units = "in",
-  scale = 1
-)
-```
-## Resources
-```{r}
-RQ2_codes %>%
-  dplyr::filter(Subcategory == "1.9 - Resources") %>%
-  dplyr::group_by(Group, initialCode) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N) %>%
-  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
-                label = case_when(
-                  proportion < 3 ~ NA,
-                  TRUE ~ label
-                )) %>%
-  ggplot() +
-  aes(y = proportion,
-      x = Group,
-      fill = initialCode) +
-  geom_col() +
-  geom_text(aes(label = label),
-            position = position_stack(vjust = 0.5),
-            color = "white") +
-  #scale_fill_manual(values = Pal) +
-  theme_void() +
-  facet_wrap(~Group, scales = "free_x") +
-  theme(legend.position = "right")
-```
-# RQ3
-What information related to open science practices do assistant professors in CSD report wanting to learn more about and how would they prefer to learn more about them?
-```{r}
-RQ3_cb <- cb_master %>%
-  dplyr::filter(RQ == "3")
-
-RQ3_codes <- uniqueCodes %>%
-  dplyr::rename(initialCode = code) %>%
-  dplyr::mutate(Group = case_when(
-    Transcript == "R1_1" ~ "R1",
-    Transcript == "R1_2" ~ "R1",
-    Transcript == "nonR1_1" ~ "non-R1",
-    Transcript == "nonR1_2" ~ "non-R1",
-  )) %>%
-  base::merge(., RQ3_cb)
-
-RQ3_ic_summary <- RQ3_codes %>%
-  dplyr::group_by(Subcategory,initialCode) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N)
-
-RQ3_sc_summary <- RQ3_codes %>%
-  dplyr::group_by(Group, Subcategory) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N)
-```
-
-## What
-```{r}
-what <- RQ3_codes %>%
-  dplyr::filter(Subcategory == "3.1 - Information") %>%
-  dplyr::group_by(Group,Subcategory,initialCode) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  dplyr::group_by(Subcategory,initialCode) %>%
-  dplyr::mutate(allN = sum(N)) %>%
-  dplyr::ungroup() %>%
-  arrange(allN) %>%
-  dplyr::filter(initialCode != "LP-P") %>%
-  dplyr::filter(initialCode != "LP-C") %>%
-  dplyr::filter(initialCode != "LP-PPOV") %>%
-  dplyr::mutate(initialCode = factor(initialCode,
-                                     levels = unique(initialCode),
-                                     labels = c(
-                                       "IRB Policies",
-                                       "OS Workflow",
-                                       "Institutional Policies",
-                                       "Self-Archiving",
-                                       "Open Peer Review",
-                                       "Open Access",
-                                       "Preregistration",
-                                       "Open Data",
-                                       "Open Educational Resources",
-                                       "All OS Practices"
-                                     )))
-
-what %>%
-  dplyr::mutate(label = paste0("  ", Group," (",round(proportion,digits = 2),"%)")) %>%
-  ggplot() +
-  aes(y = N,
-      x = initialCode,
-      fill = initialCode,
-      alpha = Group,
-      label = label) +
-  geom_bar(stat = "identity") +
-  geom_text(aes(y = allN),
-            position = position_dodge2(width = 0.9, preserve = "single"),
-            alpha = .4,
-            vjust=0.25,
-            hjust=0) +
-  scale_fill_manual(values = rev(Pal)) +
-  scale_alpha_manual(values = c(.6,1)) +
-  theme_void() +
-  theme(legend.position = "right",
-        axis.text.y = element_text(hjust = 1),
-        text=element_text(family="Arial")) +
-  coord_flip(ylim = c(0,20))
-
-ggsave(
-  plot = last_plot(),
-  filename = "Figures/RQ3_WLP Topics.png",
-  height = 6,
-  width = 8,
-  units = "in",
-  scale = 1
-)
-```
-
-## How
-```{r}
-how <- RQ3_codes %>%
-  dplyr::filter(Subcategory != "3.1 - Information") %>%
-  dplyr::group_by(Group,Subcategory,initialCode) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  dplyr::group_by(Subcategory,initialCode) %>%
-  dplyr::mutate(allN = sum(N)) %>%
-  dplyr::ungroup() %>%
-  arrange(allN) %>%
-  arrange(Subcategory) %>%
-  dplyr::mutate(initialCode = factor(initialCode,
-                                     levels = unique(initialCode)),
-                Group = factor(Group,
-                               levels = c("R1", "non-R1"),
-                               labels = c("R1", "Non-R1")),
-                Subcategory = factor(Subcategory,
-                                     levels = c("3.2 - Independent Learning",
-                                                "3.3 - Learning with Peers"),
-                                     labels = c("Independent Learning",
-                                                "Learning with Peers")))
-
-how %>%
-  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
-                label = case_when(
-                  proportion < 3 ~ NA,
-                  TRUE ~ label
-                )) %>%
-  ggplot() +
-  aes(y = proportion,
-      x = Group,
-      fill = initialCode) +
-  geom_col() +
-  geom_text(aes(label = label),
-            position = position_stack(vjust = 0.5),
-            color = "white") +
-  facet_grid(Subcategory~Group, scales = "free_x") +
-  scale_fill_manual(values = Pal) +
-  scale_alpha_manual(values = c(1,1)) +
-  theme_void() +
-  theme(legend.position = "none",
-        strip.text.y.right = element_text(angle = 90),
-        strip.text = element_text(size = 14))
-  
-
-ggsave(
-  plot = last_plot(),
-  filename = "Figures/RQ3_how.png",
-  height = 9,
-  width = 8, 
-  units = "in",
-  scale = .7
-)
-```
-
-# RQ4 
-What potential impacts do assistant professors perceive their engagement in open science practices to have on their careers?
-```{r}
-RQ4_cb <- cb_master %>%
-  dplyr::filter(RQ == "4")
-
-RQ4_codes <- uniqueCodes %>%
-  dplyr::rename(initialCode = code) %>%
-  dplyr::mutate(Group = case_when(
-    Transcript == "R1_1" ~ "R1",
-    Transcript == "R1_2" ~ "R1",
-    Transcript == "nonR1_1" ~ "non-R1",
-    Transcript == "nonR1_2" ~ "non-R1",
-  )) %>%
-  base::merge(., RQ4_cb)
-
-RQ4_ic_summary <- RQ4_codes %>%
-  dplyr::group_by(Subcategory,initialCode) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N)
-
-RQ4_sc_summary <- RQ4_codes %>%
-  dplyr::group_by(Subcategory) %>%
-  dplyr::summarise(N = NROW(initialCode)) %>%
-  dplyr::ungroup() %>%
-  dplyr::mutate(proportion = (N / sum(N))*100) %>%
-  arrange(N) %>%
-  dplyr::mutate(Subcategory = factor(Subcategory,
-                                     levels = rev(unique(Subcategory))))
-
-Pal <- c("#DD5846",
-         "#EBA240",
-         "#4283C3",
-         "#709952")
-
-RQ4_sc_summary %>%
-  dplyr::mutate(label = paste0("n = ",N," (",round(proportion,digits = 2),"%)"),
-                label = case_when(
-                  proportion < 10 ~ NA,
-                  TRUE ~ label
-                )) %>%
-  ggplot() +
-  aes(y = proportion,
-      x = 1,
-      fill = Subcategory) +
-  geom_col() +
-  geom_text(aes(label = label),
-            position = position_stack(vjust = 0.5),
-            color = "white") +
-  scale_fill_manual(values = Pal) +
-  theme_void() +
-  theme(legend.position = "right")
-
-ggsave(
-  plot = last_plot(),
-  filename = "Figures/RQ4.png",
-  height = 6,
-  width = 4.5,
-  units = "in",
-  scale = 1
-)
-```
-
-# Cloud Map
-```{r}
-codeFreq <- uniqueCodes %>%
-  dplyr::group_by(code) %>%
-  dplyr::summarise(N = NROW(code),
-                   Examples = paste0(Comment, collapse = " // ")) %>%
-  dplyr::rename(initialCode = code)
-
-cb_master <- utils::read.csv(
-  file = "Data/Prepped Data/Master Codebook.csv",
-  fileEncoding = "UTF-8") %>%
-  base::merge(., codeFreq) %>%
-  dplyr::relocate(initialCode, .after = axialCode) %>%
-  dplyr::select(!X) %>%
-  dplyr::mutate(freqWords = tm::tm_map(Examples, removePunctuation))
-
-comments_clean <- VCorpus(VectorSource(cb_master$Examples)) %>%
-  tm_map(removePunctuation) %>%
-  tm_map(content_transformer(tolower)) %>%
-  tm_map(removeNumbers) %>%
-  tm_map(stripWhitespace) %>%
-  tm_map(removeWords, stopwords('english')) %>% 
-                  tidytext::unnest_tokens(output = word, input = Text) 
-
-test <- data_frame(Text = cb_master$Examples) %>%
-  tidytext::unnest_tokens(output = word, input = Text) %>%
-                   anti_join(tidytext::stop_words) %>%
-  count(word, sort = TRUE) %>%
-  dplyr::filter(word != "yeah") %>%
-  dplyr::mutate(word = case_when(
-    word == "osf" ~ "OSF",
-    word == "nih" ~ "NIH",
-    TRUE ~ word
-  ))
-
-wordcloud(test$word, freq = test$n, scale = c(2,1), min.freq = 30,
-          colors = colorRampPalette(brewer.pal(9,"Blues"))(32)[seq(8,32,6)])
-
-ggsave(plot = last_plot())
-
-utils::write.csv(
-  x = cb_master,
-  file = "Data/Prepped Data/Master Codebook_examples.csv",
-  fileEncoding = "UTF-8")
-```
-
-# Sample Descriptives
-## Function
-```{r}
-practiceExp <- function(practice, codeData) {
-  
-practiceData <- codeData %>%
-  dplyr::filter(grepl(
-    pattern = practice,
-    x = initialCodes)) %>%
-  dplyr::mutate(
-    Practice = practice,
-    
-    # Training Experience
-    TE = case_when(
-      grepl(paste0("TE-",Practice), initialCodes) ~ 1,
-      TRUE ~ 0
-    ),
-    
-    # Uncertainty
-    U = case_when(
-      grepl(paste0("U-",Practice), initialCodes) ~ 1,
-      TRUE ~ 0
-    ),
-    
-    # Lack of Previous Experience
-    LPE = case_when(
-      grepl(paste0("LPE-",Practice), initialCodes) ~ 1,
-      TRUE ~ 0
-    ),
-    
-    # Aware
-    aware = case_when(
-      grepl(paste0("A-",Practice), initialCodes) ~ 1,
-      TRUE ~ 0
-    ),
-    
-    # Knowledge of Procedures
-    KOP = case_when(
-      grepl(paste0("KOP-",Practice), initialCodes) ~ 1,
-      TRUE ~ 0
-    ),
-    
-    # Previous Experience
-    PE = case_when(
-      grepl(paste0("PE-",Practice), initialCodes) ~ 1,
-      TRUE ~ 0
-    ),
-    
-    # Want to Learn
-    WTL = case_when(
-      grepl(paste0("WTL-",Practice), initialCodes) ~ 1,
-      TRUE ~ 0
-    ),
-    
-    # Intend
-    I = case_when(
-      grepl(paste0("I-",Practice), initialCodes) ~ 1,
-      TRUE ~ 0
-    ),
-  )
-
-return(practiceData)
-}
-```
-
-## Practices
-```{r}
-OER <-practiceExp(practice = "OER",
-                  codeData = codes)
-OD <- practiceExp(practice = "OD",
-                  codeData = codes)
-OA <- practiceExp(practice = "OA",
-                  codeData = codes)
-OM <-practiceExp(practice = "OM",
-                  codeData = codes)
-SA <-practiceExp(practice = "SA",
-                  codeData = codes)
-PR <-practiceExp(practice = "PR",
-                  codeData = codes)
-OS <-practiceExp(practice = "OS",
-                  codeData = codes)
-```
 # Plots
 ## Figure 1 - What they want to learn
 ```{r}
@@ -1114,7 +602,18 @@ WTL <- read.csv(
                                      "Institutional Policies",
                                      "IRB Policies",
                                      "Open Education Resources"
-                                     ))))
+                                     ))),
+    Type = case_when(
+      Topic == "All OS Practices" ~ "Practices",
+      Topic == "Preregistration" ~ "Practices",
+      Topic == "Self-Archiving" ~ "Practices",
+      Topic == "Open Access" ~ "Practices",
+      Topic == "Open Data" ~ "Practices",
+      Topic == "Open Peer Review" ~ "Practices",
+      Topic == "Open Materials" ~ "Practices",
+      Topic == "Open Education Resources" ~ "Practices",
+      TRUE ~ "Procedures"
+    ))
 
 WTL %>%
   dplyr::mutate(label = paste0("  ", Group," (",round(proportion,digits = 2),"%)")) %>%
@@ -1152,7 +651,12 @@ WTL %>%
        x = NULL) +
   
   # Flipping the axes
-  coord_flip()
+  coord_flip() +
+  
+  # Facet
+  facet_wrap(~Type,
+             ncol = 1,
+             scales = "free_y")
 
 ggsave(
   plot = last_plot(),
@@ -1260,70 +764,3 @@ ggsave(
 )
 
 ```
-
-
-
-# Codebook
-```{r}
-
-subcatCodebook <- rio::import("Data/Raw Data/Codebook Data/Subcategory Codebook.csv") %>%
-  dplyr::rename(`Axial Code` = `Code abbreviation`) %>%
-  dplyr::select(Subcategory:`Axial Code`)
-
-masterCodebook <- rio::import("Data/Raw Data/Codebook Data/Austin's Master Codebook.csv") %>%
-  dplyr::filter(`Axial Code` != "") %>%
-  dplyr::select(!RQ) %>%
-  base::merge(., subcatCodebook,
-               all.x = T) %>%
-  dplyr::relocate(Subcategory:RQ, .before = `Axial Code`) %>%
-  dplyr::select(!c(V7:`Consensus?`))
-
-rio::export(masterCodebook,
-            file = "Data/Prepped Data/Master Codebook.csv")
-```
-
-# RQ1
-```{r}
-
-freqCount <- CodeCount %>%
-  dplyr::rename(`Initial Code` = initialCodes)
-
-masterCodebook <- rio::import(
-            file = "Data/Prepped Data/Master Codebook.csv") %>%
-  base::merge(., freqCount, all.y = T) %>%
-  dplyr::filter(!is.na(RQ))
-
-RQ <- masterCodebook %>%
-  dplyr::filter(RQ != "N") %>%
-  dplyr::mutate(match = ifelse(`Axial Code` == `Initial Code`,TRUE,FALSE)) %>%
-  dplyr::filter(match == FALSE) %>%
-    arrange(`Axial Code`)
-
-library(ggalluvial) # install.packages("ggalluvial")
-
-RQ %>%
-  ggplot() +
-  aes(
-    #axis1 = Subcategory,
-      axis1 = `Axial Code`,
-      axis2 = `Initial Code`,
-      y = Count,
-      ) +
-  scale_x_discrete(limits = c(
-    #"Subcategory",
-                              "Axial Code",
-                              "Initial Code"),
-                   expand = c(.2, .05)) +
-  geom_alluvium(aes(fill = Group)) +
-  geom_stratum() +
-  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
-  theme_minimal()
-
-ggsave(plot = last_plot(),
-       file = "Figures/RQ1.png",
-       height = 8,
-       width = 6,
-       units = "in")
-
-```
-

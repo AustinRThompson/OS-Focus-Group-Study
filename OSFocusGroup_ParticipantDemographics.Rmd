@@ -190,7 +190,7 @@ demo_full <- demo_full |>
   dplyr::select(-c(job_title_2, edu_2))
 
 # Exporting a cleaned version of the participant demographics df
-rio::export(demo_full, "Data/Prepped Data/demo_cleaned.csv")
+rio::export(demo_full, "Data/Prepped Data/Demographics/demo_cleaned.csv")
 
 ```
 
@@ -503,7 +503,7 @@ labels <- c(id = "Participant ID",
 
 data_dict <- create_dictionary(demo_full, var_labels = labels)
 
-rio::export(data_dict, "Data/Prepped Data/demo_cleaned_dictionary.csv")
+rio::export(data_dict, "Data/Prepped Data/Demographics/demo_cleaned_dictionary.csv")
 
 
 ```
