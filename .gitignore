@@ -53,6 +53,9 @@ rsconnect/
 **/.DS_Store
 
 # Raw participant demo
-
 Data/Raw Data/Participant Demographics/
 participant_demographics.html
+
+# Raw Data: Transcripts
+Data/Raw Data/Transcripts/*~
+Data/Raw Data/Codes & References/*~
