@@ -543,7 +543,7 @@ utils::write.csv(
 ```
 
 # Plots
-## Figure 1 - What they want to learn
+## Figure 3 - What they want to learn
 ```{r}
 Pal <- c("#4F6980",
          "#849DB1",
@@ -655,7 +655,7 @@ WTL %>%
 
 ggsave(
   plot = last_plot(),
-  filename = "Figures/F1_WTL Topics.png",
+  filename = "Figures/F3_WTL Topics.png",
   height = 6,
   width = 8,
   units = "in",
@@ -664,7 +664,7 @@ ggsave(
 )
 ```
 
-## Figure 2 - Knowledge & Experience
+## Figure 4 - Knowledge & Experience
 ```{r}
 Pal <- c("#4F6980",
          "#849DB1",
@@ -691,6 +691,12 @@ knowledgeExperience <- read.csv(
                                        "Uncertain About...",
                                        "Prior Experience With...",
                                        "No Prior Experience With...")),
+    FacetTopic = case_when(
+      Domain == "Uncertain About..." ~ "Knowledge",
+      Domain == "Knowledgeable About..." ~ "Knowledge",
+      Domain == "No Prior Experience With..." ~ "Experience",
+      Domain == "Prior Experience With..." ~ "Experience"
+    ),
     Topic = case_when(
       grepl(pattern = "SA",InitialCode) ~ "Self-Archiving",
       grepl(pattern = "OA",InitialCode) ~ "Open Access",
@@ -712,7 +718,8 @@ knowledgeExperience <- read.csv(
                                      ))) %>%
   arrange(desc(N))
 
-knowledgeExperience %>%
+knowledgePlot <- knowledgeExperience %>%
+  dplyr::filter(FacetTopic == "Knowledge") %>%
   dplyr::group_by(Group, Domain, Topic) %>%
   dplyr::summarise(N = sum(N)) %>%
   ggplot() +
@@ -724,9 +731,8 @@ knowledgeExperience %>%
   
   
   geom_bar(position="stack", stat="identity") +
-  facet_wrap(~Domain,
-             scales = "free_x",
-             nrow = 1) +
+  facet_grid(~Domain,
+             scales = "free_x") +
   
   # Colors
   scale_fill_manual(values = Pal) +
@@ -737,21 +743,67 @@ knowledgeExperience %>%
     # remove the vertical grid lines
     panel.grid.major.x = element_blank(),
 
-    legend.position = "bottom",
+    legend.position = "right",
     #axis.text.x = element_text(hjust = 1),
     text = element_text(family="Arial")) +
   
+  
   # Modifying the axis labels
   labs(y = NULL,
-       x = NULL) +
+       x = NULL,
+       title = "Knowledge") +
   
   # Flipping the axes
   coord_cartesian(clip = "off")
 
+experiencePlot <- knowledgeExperience %>%
+  dplyr::filter(FacetTopic == "Experience") %>%
+  dplyr::group_by(Group, Domain, Topic) %>%
+  dplyr::summarise(N = sum(N)) %>%
+  ggplot() +
+  aes(
+    y = N,
+    x = Group,
+    fill = Topic,
+  ) +
+  
+  
+  geom_bar(position="stack", stat="identity") +
+  facet_grid(~Domain,
+             scales = "free_x") +
+  
+  # Colors
+  scale_fill_manual(values = Pal) +
+  
+  # Modifying the theme
+  theme_minimal() +
+  theme(
+    # remove the vertical grid lines
+    panel.grid.major.x = element_blank(),
+
+    legend.position = "right",
+    #axis.text.x = element_text(hjust = 1),
+    text = element_text(family="Arial")) +
+  
+  
+  # Modifying the axis labels
+  labs(y = NULL,
+       x = NULL,
+       title = "Experience") +
+  
+  # Flipping the axes
+  coord_cartesian(clip = "off")
+
+F2 <- knowledgePlot + experiencePlot +
+  #patchwork::guide_area() +
+  theme(legend.position = "right")+
+  patchwork::plot_layout(ncol = 1, guides = "collect")
+F2
+
 ggsave(
   plot = last_plot(),
-  filename = "Figures/F2_Knowledge and Experience.png",
-  height = 4,
+  filename = "Figures/F4_Knowledge and Experience.png",
+  height = 8,
   width = 8,
   units = "in",
   scale = .9,
