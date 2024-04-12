@@ -445,9 +445,9 @@ use_plot
 
 # Combining the ratings plot
 
-ratings_plot <- ggpubr::ggarrange(fam_plot, use_plot, ncol = 2, align = "h", common.legend = T, legend = "bottom")
+ratings_plot <- ggpubr::ggarrange(fam_plot, use_plot, ncol = 2, align = "hv", common.legend = T, legend = "bottom")
 
-ggsave("Figures/ratings_plot.png", plot = last_plot())
+ggsave("Figures/ratings_plot.png", plot = last_plot(), width = 8, height = 5, units = "in")
 ```
 
 
