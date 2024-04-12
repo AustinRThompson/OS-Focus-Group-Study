@@ -320,29 +320,27 @@ rm(demo_2, demo_table, Non_R1, R1, research_area_table)
 
 ```{r, warning = F, message = F}
 
-# Color Palette
-my_pal <- lacroix_palette("Mango", type = "discrete")
-
 demo_full |>
   dplyr::select(-research_area) |>
   dplyr::distinct() |>
-  dplyr::group_by(focus_group, region, fam_os, use_os) |>
+  dplyr::group_by(focus_group, fam_os, use_os) |>
   dplyr::summarize(n = n()) |>
   ggplot() +
   aes(y = n,
+      alpha = focus_group,
       axis1 = focus_group,
       axis2 = fam_os,
       axis3 = use_os) +
-  geom_alluvium(aes(fill = focus_group), width = 1/12) +
-  geom_stratum(width = 1/12, alpha = .5) +
+  geom_alluvium(width = 1/12, fill = "#4F6980") +
+  geom_stratum(width = 1/12) +
   geom_label(stat = "stratum", aes(label = after_stat(stratum))) +
   scale_x_discrete(limits = c("focus_group", "fam_os", "use_os"), 
                    labels = c("Institution Classification", "Familiarity with Open Science", "Use of Open Science"),
                    expand = c(.05, .05)) +
-  scale_fill_manual(values = my_pal) +
-  labs(y = "Count",
-       fill = "Group") +
-  theme_classic()
+  scale_alpha_manual(values = c(.5, .8)) +
+  labs(y = "Count") +
+  theme_classic() +
+  theme(legend.position = "none")
 
 ```
 
@@ -350,6 +348,7 @@ demo_full |>
 ## Research Area Plot
 
 ```{r, warning = F, message = F}
+
 research_plot <- demo_full |>
   dplyr::select(id, focus_group, research_area) |>
   dplyr::group_by(focus_group, research_area) |>
@@ -357,17 +356,14 @@ research_plot <- demo_full |>
   ggplot() +
   aes(x = research_area,
       y = n,
-      color = focus_group,
-      fill = focus_group) +
-  geom_bar(stat = "identity", position=position_dodge(), alpha = .5) +
+      group = focus_group,
+      alpha = focus_group) +
+  geom_bar(stat = "identity", position=position_dodge(), fill = "#4F6980") +
   labs(title = "Research Areas",
        x = "",
        y = "Count",
-       caption = "Note: Participants were able to select multiple research areas. None of the R1 participants \nhad research areas in higher education or telepractice in CSD.",
-       color = "Group",
-       fill = "Group") +
-  scale_color_manual(values = my_pal) +
-  scale_fill_manual(values = my_pal) +
+       alpha = "Group") +
+  scale_alpha_manual(values = c(.6, 1)) +
   scale_y_continuous(breaks = seq( 0 ,12, by = 2)) +
   scale_x_discrete(labels = c("AAC", "Articulation/Speech Science", "Aural Rehabilitation",
                               "Cognitive-Linguistic Communication", "Cultural/Linguistic Diversity",
@@ -399,14 +395,12 @@ fam_plot <- demo_full |>
   aes(x = fam_os,
       y = n,
       group = focus_group,
-      color = focus_group,
-      fill = focus_group) +
-  geom_bar(stat = "identity", position=position_dodge(), alpha = .5) +
+      alpha = focus_group) +
+  geom_bar(stat = "identity", position=position_dodge(), fill = "#4F6980") +
   labs(title = "Familiarity with Open Science Practices", 
        x = "", y = "Count", 
-       color = "Group", fill = "Group") +
-  scale_color_manual(values = my_pal) +
-  scale_fill_manual(values = my_pal) +
+       alpha = "Group") +
+  scale_alpha_manual(values = c(.6, 1)) +
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45, hjust = 1),
@@ -424,20 +418,18 @@ fam_plot
 
 use_plot <- demo_full |>
   dplyr::select(id, focus_group, use_os) |>
-  dplyr::group_by(focus_group, use_os) |>
-  dplyr::summarize(n = n()) |>
+  dplyr::group_by(focus_group, use_os, .drop = F) |>
+  dplyr::summarize(n = n(), .groups = "drop") |>
   ggplot() + 
   aes(x = use_os,
       y = n,
       group = focus_group,
-      color = focus_group,
-      fill = focus_group) +
-  geom_bar(stat = "identity", position=position_dodge(), alpha = .5) +
+      alpha = focus_group) +
+  geom_bar(stat = "identity", position=position_dodge(), fill = "#4F6980") +
   labs(title = "Use of Open Science Practices", 
        x = "", y = "Count", 
-       color = "Group", fill = "Group") +
-  scale_color_manual(values = my_pal) +
-  scale_fill_manual(values = my_pal) +
+       alpha = "Group") +
+  scale_alpha_manual(values = c(.6, 1)) +
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45, hjust = 1),
@@ -454,8 +446,6 @@ use_plot
 # Combining the ratings plot
 
 ratings_plot <- ggpubr::ggarrange(fam_plot, use_plot, ncol = 2, align = "h", common.legend = T, legend = "bottom")
-
-ggpubr::annotate_figure(ratings_plot, bottom = text_grob("Note: None of the participants from the Non-R1 group indicated they were 'extremely familiar' with open science practices.", hjust = 1, x = 1, face = "italic", size = 6))
 
 ggsave("Figures/ratings_plot.png", plot = last_plot())
 ```
