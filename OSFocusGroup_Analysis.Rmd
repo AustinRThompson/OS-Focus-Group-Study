@@ -565,11 +565,12 @@ WTL <- read.csv(
   dplyr::group_by(Subcategory,InitialCode) %>%
   dplyr::mutate(allN = sum(N)) %>%
   dplyr::ungroup() %>%
-  arrange(allN) %>%
+  #arrange(allN) %>%
   dplyr::filter(InitialCode != "LP-P") %>%
   dplyr::filter(InitialCode != "LP-C") %>%
   dplyr::filter(InitialCode != "LP-PPOV") %>%
   dplyr::mutate(
+    Group = factor(Group, levels = c("R1", "non-R1")),
     Topic = case_when(
       grepl(pattern = "SA",InitialCode) ~ "Self-Archiving",
       grepl(pattern = "OA",InitialCode) ~ "Open Access",
@@ -584,20 +585,6 @@ WTL <- read.csv(
       grepl(pattern = "IRB", InitialCode) ~ "IRB Policies",
       grepl(pattern = "IP", InitialCode) ~ "Institutional Policies",
     ),
-    Topic = factor(Topic, levels = rev(c("All OS Practices",
-                                     "Preregistration",
-                                     "Self-Archiving",
-                                     "Open Access",
-                                     "Open Data",
-                                     
-                                     "Open Peer Review",
-                                     "Open Materials",
-                                     "Open Science Workflow",
-                                     "NIH Procedures",
-                                     "Institutional Policies",
-                                     "IRB Policies",
-                                     "Open Education Resources"
-                                     ))),
     Type = case_when(
       Topic == "All OS Practices" ~ "Practices",
       Topic == "Preregistration" ~ "Practices",
@@ -608,15 +595,16 @@ WTL <- read.csv(
       Topic == "Open Materials" ~ "Practices",
       Topic == "Open Education Resources" ~ "Practices",
       TRUE ~ "Procedures"
-    ))
+    )) %>%
+  dplyr::group_by(Type) %>%
+  dplyr::arrange(Topic)
 
 WTL %>%
   dplyr::mutate(label = paste0("  ", Group," (",round(proportion,digits = 2),"%)")) %>%
   ggplot() +
   aes(y = N,
       x = Topic,
-      alpha = Group,
-      label = label) +
+      alpha = Group) +
   
   geom_bar(stat = "identity",
            fill = Pal[1]) +
@@ -646,6 +634,7 @@ WTL %>%
        x = NULL) +
   
   # Flipping the axes
+  scale_x_discrete(limits=rev) +
   coord_flip() +
   
   # Facet

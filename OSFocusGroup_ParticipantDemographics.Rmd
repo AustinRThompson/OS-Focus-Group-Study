@@ -383,7 +383,7 @@ ggsave("Figures/research_area_plot.png", plot = last_plot())
 ```
 
 
-## Familiarity and Use of Open Science
+## Figure 1 - Familiarity and Use of Open Science
 
 ```{r, warning = F, message = F}
 
@@ -396,7 +396,9 @@ fam_plot <- demo_full |>
       y = n,
       group = focus_group,
       alpha = focus_group) +
-  geom_bar(stat = "identity", position=position_dodge(), fill = "#4F6980") +
+  geom_bar(stat = "identity",
+           position = position_dodge(preserve = 'single'),
+           fill = "#4F6980") +
   labs(title = "Familiarity with Open Science Practices", 
        x = "", y = "Count", 
        alpha = "Group") +
@@ -425,7 +427,9 @@ use_plot <- demo_full |>
       y = n,
       group = focus_group,
       alpha = focus_group) +
-  geom_bar(stat = "identity", position=position_dodge(), fill = "#4F6980") +
+  geom_bar(stat = "identity",
+           position = position_dodge(preserve = 'single'),
+           fill = "#4F6980") +
   labs(title = "Use of Open Science Practices", 
        x = "", y = "Count", 
        alpha = "Group") +
