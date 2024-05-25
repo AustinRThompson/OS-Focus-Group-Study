@@ -19,7 +19,6 @@ Loading in the required packages.
 ```{r}
 library(tidyverse) # install.packages('tidyverse')
 library(viridis)  # install.packages('viridis')
-library(wordcloud) # install.packages('wordcloud')
 library(tm) # install.packages('tm')
 library(extrafont) # install.packages('extrafont')
 ```
@@ -696,6 +695,7 @@ knowledgeExperience <- read.csv(
       grepl(pattern = "PR", InitialCode) ~ "Preregistration",
       grepl(pattern = "NIH", InitialCode) ~ "NIH Procedures",
     ),
+    Group = factor(Group, levels = c("R1", "non-R1")),
     Topic = factor(Topic, levels = c("Open Science (General)",
                                      "Open Access",
                                      "Self-Archiving",
