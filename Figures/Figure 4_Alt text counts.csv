@@ -13,14 +13,12 @@ non-R1,Knowledge,Knowledgeable About...,Self-Archiving,1
 R1,Knowledge,Uncertain About...,Self-Archiving,3
 non-R1,Knowledge,Uncertain About...,Self-Archiving,5
 R1,Experience,Prior Experience With...,Self-Archiving,7
-non-R1,Experience,Prior Experience With...,Self-Archiving,6
-non-R1,Experience,Prior Experience With...,Self-Archiving,2
+non-R1,Experience,Prior Experience With...,Self-Archiving,8
 non-R1,Knowledge,Knowledgeable About...,Preregistration,2
 R1,Knowledge,Uncertain About...,Preregistration,1
 non-R1,Knowledge,Uncertain About...,Preregistration,4
 R1,Experience,Prior Experience With...,Preregistration,4
 non-R1,Experience,Prior Experience With...,Preregistration,3
-non-R1,Experience,Prior Experience With...,Preregistration,1
 R1,Experience,No Prior Experience With...,Preregistration,3
 R1,Knowledge,Knowledgeable About...,Open Data,1
 R1,Knowledge,Uncertain About...,Open Data,4
@@ -40,3 +38,4 @@ R1,Knowledge,Uncertain About...,Open Education Resources,1
 non-R1,Knowledge,Uncertain About...,Open Education Resources,1
 R1,Experience,Prior Experience With...,Open Education Resources,1
 non-R1,Experience,Prior Experience With...,Open Education Resources,1
+non-R1,Experience,Prior Experience With...,Open Peer Review,1

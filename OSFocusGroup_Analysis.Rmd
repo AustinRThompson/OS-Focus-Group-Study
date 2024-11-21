@@ -661,14 +661,17 @@ file = "Figures/Figure 3_Alt text counts.csv")
 
 ## Figure 4 - Knowledge & Experience
 ```{r}
-Pal <- c("#4F6980",
-         "#849DB1",
-         "#A2CEAA",
-         "#638B66",
-         "#F47942",
-         "#FBB04E",
-         "#B66353",
-         "#D7CE9F")
+Pal <- c(
+  "#4F5280",
+  "#4F6980",
+  "#849DB1",
+  "#A2CEAA",
+  "#638B66",
+  "#F47942",
+  "#FBB04E",
+  "#B66353",
+  "#D7CE9F"
+)
 
 
 knowledgeExperience <- read.csv(
@@ -693,6 +696,7 @@ knowledgeExperience <- read.csv(
       Domain == "Prior Experience With..." ~ "Experience"
     ),
     Topic = case_when(
+      grepl(pattern = "OPR",InitialCode) ~ "Open Peer Review",
       grepl(pattern = "SA",InitialCode) ~ "Self-Archiving",
       grepl(pattern = "OA",InitialCode) ~ "Open Access",
       grepl(pattern = "OM",InitialCode) ~ "Open Materials",
@@ -710,7 +714,8 @@ knowledgeExperience <- read.csv(
                                      "Open Data",
                                      "Open Materials",
                                      "NIH Procedures",
-                                     "Open Education Resources"
+                                     "Open Education Resources",
+                                     "Open Peer Review"
                                      ))) %>%
   arrange(desc(N))
 
@@ -739,7 +744,7 @@ knowledgePlot <- knowledgeExperience %>%
     # remove the vertical grid lines
     panel.grid.major.x = element_blank(),
 
-    legend.position = "right",
+    legend.position = "none",
     #axis.text.x = element_text(hjust = 1),
     text = element_text(family="Arial")) +
   
@@ -797,7 +802,7 @@ F2 <- knowledgePlot + experiencePlot +
 F2
 
 ggsave(
-  plot = last_plot(),
+  plot = F2,
   filename = "Figures/Figure 4_Knowledge and Experience.png",
   height = 8,
   width = 8,
@@ -809,6 +814,8 @@ ggsave(
 rio::export(
 knowledgeExperience %>%
   dplyr::select(Group, FacetTopic, Domain, Topic, N) %>%
+  dplyr::group_by(Group, FacetTopic, Domain, Topic) %>%
+  dplyr::summarise(N = sum(N)) %>%
   dplyr::arrange(Topic, Domain, FacetTopic, Group),
 file = "Figures/Figure 4_Alt text counts.csv")
 
