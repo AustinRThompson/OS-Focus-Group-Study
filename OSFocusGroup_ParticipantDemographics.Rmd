@@ -218,7 +218,7 @@ demo_full <- rio::import("Data/Prepped Data/Demographics/demo_cleaned.csv") %>%
   )
 
 demo_table <- demo_full |>
-  dplyr::select(id, focus_group, age, gender, race, years_emp_total, research_exp, 
+  dplyr::select(id, focus_group, age, gender, race, edu_class, years_emp_total, research_exp, 
                 region, research_percent, teaching_percent, service_percent,
                 assistant_pubs, total_pubs) |>
   dplyr::distinct() |>
@@ -232,6 +232,7 @@ demo_table <- demo_full |>
     label = list(age ~ "Age",
                  gender ~ "Gender",
                  race ~ "Race",
+                 edu_class ~ "Grad School Classification",
                  years_emp_total ~ "Total Years Employed as Assistant Professor",
                  research_exp ~ "Total Years of Research Experience",
                  region ~ "Region",
