@@ -1,0 +1,19 @@
+Group,Type,Topic,N,TopicN
+R1,Practices,All OS Practices,5,13
+non-R1,Practices,All OS Practices,8,13
+R1,Practices,Open Access,2,5
+non-R1,Practices,Open Access,3,5
+R1,Practices,Open Data,4,6
+non-R1,Practices,Open Data,2,6
+R1,Practices,Open Education Resources,4,12
+non-R1,Practices,Open Education Resources,8,12
+R1,Practices,Open Peer Review,3,4
+non-R1,Practices,Open Peer Review,1,4
+R1,Practices,Preregistration,1,5
+non-R1,Practices,Preregistration,4,5
+R1,Practices,Self-Archiving,2,3
+non-R1,Practices,Self-Archiving,1,3
+R1,Procedures,IRB Policies,1,2
+non-R1,Procedures,IRB Policies,1,2
+non-R1,Procedures,Institutional Policies,2,2
+R1,Procedures,Open Science Workflow,2,2

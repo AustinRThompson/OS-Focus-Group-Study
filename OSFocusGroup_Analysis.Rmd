@@ -643,13 +643,20 @@ WTL %>%
 
 ggsave(
   plot = last_plot(),
-  filename = "Figures/F3_WTL Topics.png",
+  filename = "Figures/Figure 3_WTL Topics.png",
   height = 6,
   width = 8,
   units = "in",
   scale = .8,
   bg = "white"
 )
+
+rio::export(
+WTL %>%
+  dplyr::select(Group, Type, Topic, N, TopicN = allN) %>%
+  arrange(Type, Topic, Group),
+file = "Figures/Figure 3_Alt text counts.csv")
+
 ```
 
 ## Figure 4 - Knowledge & Experience
@@ -791,12 +798,18 @@ F2
 
 ggsave(
   plot = last_plot(),
-  filename = "Figures/F4_Knowledge and Experience.png",
+  filename = "Figures/Figure 4_Knowledge and Experience.png",
   height = 8,
   width = 8,
   units = "in",
   scale = .9,
   bg = "white"
 )
+
+rio::export(
+knowledgeExperience %>%
+  dplyr::select(Group, FacetTopic, Domain, Topic, N) %>%
+  dplyr::arrange(Topic, Domain, FacetTopic, Group),
+file = "Figures/Figure 4_Alt text counts.csv")
 
 ```

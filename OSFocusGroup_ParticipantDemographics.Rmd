@@ -27,7 +27,6 @@ library(rio) # install.packages("rio")
 library(gtsummary) # install.packages("gtsummary")
 library(gt) # install.packages("gt")
 library(remotes) # install.packages("remotes")
-library(LaCroixColoR) # remotes::install_github("johannesbjork/LaCroixColoR")
 library(ggalluvial) # install.packages("ggalluvial")
 library(ggpubr) # install.packages("ggpubr")
 
@@ -202,6 +201,21 @@ rio::export(demo_full, "Data/Prepped Data/Demographics/demo_cleaned.csv")
 This is the main demographic table for the Open Science Focus group study.
 
 ```{r, warning = F, message = F}
+demo_full <- rio::import("Data/Prepped Data/Demographics/demo_cleaned.csv") %>%
+  dplyr::mutate(
+    fam_os = factor(
+      fam_os,
+      levels = c(
+        "Not Familiar at All",
+        "Slightly Familiar",
+        "Somewhat Familiar",
+        "Moderately Familiar",
+        "Extremely Familiar"
+      )
+    ),
+    use_os = factor(use_os, levels = c("Never", "Rarely", "Sometimes", "Often")),
+    focus_group = factor(focus_group, levels = c("R1", "Non-R1"))
+  )
 
 demo_table <- demo_full |>
   dplyr::select(id, focus_group, age, gender, race, years_emp_total, research_exp, 
@@ -345,7 +359,7 @@ demo_full |>
 ```
 
 
-## Research Area Plot
+## Supplemental Figure 1 - Research Area Plot
 
 ```{r, warning = F, message = F}
 
@@ -378,17 +392,19 @@ research_plot <- demo_full |>
 
 research_plot
 
-ggsave("Figures/research_area_plot.png", plot = last_plot())
+ggsave("Figures/Figure S1_Research Areas.png", plot = research_plot)
 
 ```
 
 
-## Figure 1 - Familiarity and Use of Open Science
+## Figure 1
+### Familiarity of Open Science
 
 ```{r, warning = F, message = F}
 
 fam_plot <- demo_full |>
   dplyr::select(id, focus_group, fam_os) |>
+  dplyr::distinct() |>
   dplyr::group_by(focus_group, fam_os) |>
   dplyr::summarize(n = n()) |>
   ggplot() + 
@@ -414,12 +430,13 @@ fam_plot
 ```
 
 
-## Use of Open Science
+### Use of Open Science
 
 ```{r, warning = F, message = F}
 
 use_plot <- demo_full |>
   dplyr::select(id, focus_group, use_os) |>
+  dplyr::distinct() |>
   dplyr::group_by(focus_group, use_os, .drop = F) |>
   dplyr::summarize(n = n(), .groups = "drop") |>
   ggplot() + 
@@ -451,7 +468,21 @@ use_plot
 
 ratings_plot <- ggpubr::ggarrange(fam_plot, use_plot, ncol = 2, align = "hv", common.legend = T, legend = "bottom")
 
-ggsave("Figures/ratings_plot.png", plot = last_plot(), width = 8, height = 5, units = "in")
+fam_plot_altTextCount <- demo_full |>
+  dplyr::select(id, focus_group, fam_os) |>
+  dplyr::distinct() |>
+  dplyr::group_by(focus_group, fam_os) |>
+  dplyr::summarize(n = n())
+
+use_plot_altTextCount <- demo_full |>
+  dplyr::select(id, focus_group, use_os) |>
+  dplyr::distinct() |>
+  dplyr::group_by(focus_group, use_os, .drop = F) |>
+  dplyr::summarize(n = n(), .groups = "drop")
+
+ggsave("Figures/Figure 1_familiarity and use of OS.png", plot = ratings_plot, width = 8, height = 5, units = "in", bg = "white")
+rio::export(fam_plot_altTextCount, "Figures/Figure 1.1_Alt text counts for Familiarity of Open Science Practices.csv")
+rio::export(use_plot_altTextCount, "Figures/Figure 1.2_Alt text counts for Use of Open Science Practices.csv")
 ```
 
 
