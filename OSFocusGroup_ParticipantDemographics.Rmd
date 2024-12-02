@@ -419,6 +419,7 @@ fam_plot <- demo_full |>
   labs(title = "Familiarity with Open Science Practices", 
        x = "", y = "Count", 
        alpha = "Group") +
+  coord_cartesian(ylim = c(0,8)) +
   scale_alpha_manual(values = c(.6, 1)) +
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5),
@@ -451,6 +452,8 @@ use_plot <- demo_full |>
   labs(title = "Use of Open Science Practices", 
        x = "", y = "Count", 
        alpha = "Group") +
+  coord_cartesian(ylim = c(0,10)) +
+  scale_y_continuous(breaks=c(0,2, 4, 6, 8, 10)) +
   scale_alpha_manual(values = c(.6, 1)) +
   theme_classic() +
   theme(plot.title = element_text(hjust = 0.5),
